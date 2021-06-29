@@ -1,0 +1,42 @@
+* Version 18.0.1 [2021-06-15]
+
+ADDED: Bosnian locale to platform
+ADDED: Asturian, Cibemba, Efik, Esperanto, Georgian, Igbo, Khmer, Malagasy, Pashto, Swahili, Tamil, Vietnamese, Yoruba locales to platform installer
+ADDED: Set platform language based on installer selection for languages without language codes, notice for languages needing a translation
+UPDATED: Arabic, Finnish, French, Greek, Hindi, Japanese, Malagasy, Pashto, Uzbek
+UPDATED: Improved Platform TEMP rights checks
+FIXED: Platform installer RTL language display
+
+* Version 18.0 [2021-06-09]
+
+ADDED: Support for .NET 3/4 and 3.5/4 apps
+ADDED: 64-bit only app support in the app store
+ADDED: Kurdish locale (machine translation)
+ADDED: External env var to set platform installer language: PortableApps.comLocaleID_PlatformInstaller
+UPDATED: 5-10x improvement in App Store opening speed
+UPDATED: Improve app update check performance
+UPDATED: Delphi compiler to 10.4.2 Patch 1.0, improved stability and performance
+UPDATED: Improve Platform installer graphics
+UPDATED: Default view switched to all apps with categories
+UPDATED: Arabic, Armenian, Bulgarian, Chinese Simplified, Chinese Traditional, Croatian, Czech, Dutch, English, EnglishGB, Estonian, French, Galacian, German, Greek, Hebrew, Hindi, Hungarian, Italian, Japanese, Korean, Latvian, Polish, Portuguese, PortugueseBrazil, Romanian, Russian, Slovak, Slovenian, Spanish, Spanish International, Sundanese, Swedish, Turkish, Vietnamese locales
+FIXED: Out of range issue causing crashes
+FIXED: Explore button hotkey and screen reader not working
+FIXED: Rename window graphic missing
+FIXED: Display Options in Options window not translated for many locales
+FIXED: Italian locale changed Localeglibc=it
+
+* Version 17.1.1 [2020-09-09]
+
+UPDATED: Hungarian, Japanese, Portuguese, Russian locales
+FIXED: Incorrect version reported in About window
+FIXED: Opera Legacy 36 not showing icon in Updater/App Store
+
+* Version 17.1 [2020-09-04]
+
+ADDED: Monitor autorun.inf option
+ADDED: Fade menu in/out option
+ADDED: Hide holiday logo decorations option
+UPDATED: Delphi compiler to 10.4.1, improved stability
+UPDATED: Armenian, Croatian, Dutch, English, EnglishGB, Finnish, German, Japanese, Polish, Portuguese locales
+FIXED: Sub-category locale strings missing in Updater/App Store
+FIXED: Supporters and Silver Sponsors not translated in About

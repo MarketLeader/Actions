@@ -19,13 +19,13 @@
  
 !define NAME "YUMI"
 !define FILENAME "YUMI"
-!define VERSION "2.0.8.8"
+!define VERSION "2.0.6.7"
 !define MUI_ICON "images\usbicon.ico" ; "${NSISDIR}\Contrib\Graphics\Icons\nsis1-install.ico"
 
 ; MoreInfo Plugin - Adds Version Tab fields to Properties. Plugin created by onad http://nsis.sourceforge.net/MoreInfo_plug-in
 VIProductVersion "${VERSION}"
 VIAddVersionKey CompanyName "pendrivelinux.com"
-VIAddVersionKey LegalCopyright "Copyright © Pendrivelinux.com"
+VIAddVersionKey LegalCopyright "Copyright ©2019 Pendrivelinux.com"
 VIAddVersionKey FileVersion "${VERSION}"
 VIAddVersionKey FileDescription "YUMI"
 VIAddVersionKey License "GPL Version 2"
@@ -33,24 +33,24 @@ VIAddVersionKey License "GPL Version 2"
 Name "${NAME} ${VERSION}"
 OutFile "${FILENAME}-${VERSION}.exe"
 RequestExecutionLevel admin ;highest
-SetCompressor /SOLID lzma
+SetCompressor LZMA
 CRCCheck On
 XPStyle on
 ShowInstDetails show
 BrandingText "${NAME} ${VERSION}"
 CompletedText "All Finished, Process is Complete!"
 InstallButtonText "Create"
-Unicode True
 
-!include WinVer.nsh
 !include WordFunc.nsh
 !include nsDialogs.nsh
 !include MUI2.nsh
 !include FileFunc.nsh
 !include LogicLib.nsh
+;!include TextFunc.nsh
 !AddPluginDir "plugins"
 
 ; Variables
+Var HDDUSB
 Var Capacity
 Var VolName
 Var Checker
@@ -100,6 +100,8 @@ Var LocalSelection
 Var Letters
 Var Config2Use
 Var SomeFileExt
+Var AllDriveOption
+Var DisplayAll
 Var DistroLink
 Var Homepage
 Var OfficialSite
@@ -114,8 +116,10 @@ Var InUnStalled
 Var OnFrom
 Var SUSEDIR
 Var RepeatInstall
+Var ShowAll
 Var ForceShowAll
 Var ShowingAll
+
 Var SizeOfCasper 
 Var Casper
 Var CasperSlider
@@ -124,6 +128,8 @@ Var SlideSpot
 Var RemainingSpace
 Var MaxPersist
 Var Persistence
+;Var VolMountPoint
+;Var DismountAction
 Var VHDDisk
 Var VHDSize
 Var VHDLBL
@@ -132,9 +138,11 @@ Var CasperName
 Var COMSPEC
 Var PERCENT
 Var DiskNum
+
 Var Wipe
 Var WipeIt
 Var WipeMe
+;Var DisMounted
 
 !include DiskVoodoo.nsh
 
@@ -203,7 +211,6 @@ LangString Finish_Link ${LANG_ENGLISH} "Visit the YUMI Home Page"
 !include FileManipulation.nsh ; Text File Manipulation
 !include FileNames.nsh ; Macro for FileNames
 !include DistroList.nsh ; List of Distributions
-!include StrContains.nsh
 !include "CasperScript.nsh" ; For creation of Persistent Casper-rw files
 !include ReplaceInFile.nsh
 
@@ -266,6 +273,12 @@ Function SelectionsPage
 ; Casper-RW Selection Starts
   ${NSD_CreateLabel} 0 150 75% 15 ""
   Pop $CasperSelection  
+  
+; CasperSlider - TrackBar
+  !define TBM_SETPOS 0x0405
+  !define TBM_GETPOS 0x0400
+  !define TBM_SETRANGEMIN 0x0407
+  !define TBM_SETRANGEMAX 0x0408
 
   ${NSD_CreateLabel} 52% 178 25% 25 ""
   Pop $SlideSpot  
@@ -273,7 +286,7 @@ Function SelectionsPage
   nsDialogs::CreateControl "msctls_trackbar32" "0x50010000|0x00000018" "" 0 174 50% 25 ""
   Pop $CasperSlider
   SendMessage $CasperSlider ${TBM_SETRANGEMIN} 1 0 ; Min Range Value 0
-  SendMessage $CasperSlider ${TBM_SETRANGEMAX} 1 $RemainingSpace ; Max Range Value
+  SendMessage $CasperSlider ${TBM_SETRANGEMAX} 1 $RemainingSpace ; Max Range Value $RemainingSpace
   ${NSD_OnNotify} $CasperSlider onNotify_CasperSlider    
 
 ; Drive Pre-Selection  
@@ -281,28 +294,41 @@ Function SelectionsPage
   Pop $LabelDrivePage 
   ${NSD_SetText} $LabelDrivePage "Step 1: YUMI Summoned $DestDisk as your USB Device"  
 ; Droplist for Drive Selection  
-  ${NSD_CreateDropList} 0 20 58% 15 ""
+  ${NSD_CreateDropList} 0 20 35% 15 "" ; was 0 20 28% 15
   Pop $DestDriveTxt 
   
-  ${GetDrives} "FDD+HDD" DrivesList
-
+   ${If} $ShowAll == "YES"
+   ${GetDrives} "FDD+HDD" DrivesList ; All Drives Listed
+   ${ElseIf} $ShowAll == "NO"
+   ${GetDrives} "FDD" DrivesList ; FDD+HDD reduced to FDD for removable media only
+   ${EndIf}
+  
   ${NSD_CB_SelectString} $DestDriveTxt "$DestDrive"
-  ${NSD_GetText} $DestDriveTxt $Letters
-  StrCpy $JustDrive $DestDrive 3  
-  StrCpy $BootDir $DestDrive 2  
-  StrCpy $DestDisk $DestDrive 2
-  StrCpy $9 $JustDrive
-  Call GetFSType
-  Call PhysDrive
+  StrCpy $JustDrive $DestDrive 3
+  StrCpy $BootDir $DestDrive 2 ;was -1 
+  StrCpy $DestDisk $DestDrive 2 ;was -1
   SendMessage $Distro ${CB_RESETCONTENT} 0 0 ; was ${NSD_LB_Clear} $Distro "" ; Clear all distro entries because a new drive may have been chosen ; Enable for DropBox
   StrCpy $Checker "Yes"  
   Call InstallorRemove
-  Call SetSpace
   Call CheckSpace
   Call FormatIt 
   Call EnableNext 
+  ${NSD_OnChange} $DestDriveTxt OnSelectDrive 
   
-  ${NSD_OnChange} $DestDriveTxt OnSelectDrive   				   
+; All Drives Option
+  ${NSD_CreateCheckBox} 36% 23 23% 15 "Show All Drives?" ; was 30% 23 30% 15
+  Pop $AllDriveOption
+  ${NSD_OnClick} $AllDriveOption ListAllDrives   
+  
+; Format Drive Option
+  ${NSD_CreateCheckBox} 60% 23 100% 15 "NTFS Format $DestDisk"
+  Pop $Format
+  ${NSD_OnClick} $Format FormatIt  
+
+; Format Fat32 Option
+  ${NSD_CreateCheckBox} 60% 40 100% 15 "Fat32 Format $DestDisk"
+  Pop $FormatFat
+  ${NSD_OnClick} $FormatFat FormatIt    
   
 ; Add Home Link
   ${NSD_CreateLink} 0 215 16% 15 "Home Page"
@@ -326,16 +352,11 @@ Function SelectionsPage
   GetDlgItem $6 $HWNDPARENT 3
   ShowWindow $6 0 
 ; Hide or disable steps until we state to display them 
-
   EnableWindow $LabelISOSelection 0
   EnableWindow $ISOFileTxt 0
   ShowWindow $ISOSelection 0
   EnableWindow $DownloadISO 0
   ShowWindow $DistroLink 0
-  ShowWindow $ForceShowAll 0
-  ShowWindow $CasperSelection 0 
-  ShowWindow $CasperSlider 0 
-  ShowWindow $SlideSpot 0   
   StrCpy $JustISOName "NULL" ; Set to NULL until something is selected
   nsDialogs::Show  
   
@@ -344,14 +365,12 @@ Function SelectionsPage
 ; To Install or Uninstall? That is the question!  
   ${NSD_CreateCheckBox} 60% 0 44% 15 "View or Remove Installed Distros?"
   Pop $Uninstaller
-  ${NSD_OnClick} $Uninstaller Uninstall 
+  ${NSD_OnClick} $Uninstaller Uninstall  
   
- ${If} ${AtLeastWin8} ; checkpoint to test if is => Windows 8 to support Diskpart on removable disks.   
 ; Alt Wipe Disk and all Partitions, Volumes.
   ${NSD_CreateCheckBox} 60% 0 44% 15 "Wipe Entire (Disk $DiskNum)"
   Pop $Wipe
-  ${NSD_OnClick} $Wipe WipeIt  
- ${EndIf}
+  ${NSD_OnClick} $Wipe WipeIt     
   
 ; Drive Selection Starts  
   ${NSD_CreateLabel} 0 0 58% 15 ""    
@@ -359,17 +378,20 @@ Function SelectionsPage
   ${NSD_SetText} $LabelDrivePage "Step 1: Select the Drive Letter of your USB Device."    
   
 ; Droplist for Drive Selection
-  ${NSD_CreateDropList} 0 20 58% 15 ""
+  ${NSD_CreateDropList} 0 20 35% 15 "" ; was 0 20 28% 15
   Pop $DestDriveTxt
   Call ListAllDrives
-  ${NSD_OnChange} $DestDriveTxt OnSelectDrive 			   				  
+  ${NSD_OnChange} $DestDriveTxt OnSelectDrive
+ 
+; All Drives Option
+ ${NSD_CreateCheckBox} 36% 23 23% 15 "Show All Drives?" ; was 30% 23 30% 15
+ Pop $AllDriveOption
+ ${NSD_OnClick} $AllDriveOption ListAllDrives 
   
- ${If} ${AtLeastWin8} ; checkpoint to test if is => Windows 8 to support Diskpart on removable disks.  
-; Format NTFS Option
+; Format Drive Option
   ${NSD_CreateCheckBox} 60% 23 100% 15 "NTFS Format $DestDisk"
   Pop $Format
   ${NSD_OnClick} $Format FormatIt  
- ${EndIf}
 
 ; Format Fat32 Option
   ${NSD_CreateCheckBox} 60% 40 100% 15 "Fat32 Format $DestDisk"
@@ -412,6 +434,12 @@ Function SelectionsPage
 ; Casper-RW Selection Starts
   ${NSD_CreateLabel} 0 150 75% 15 "" ;$(Casper_Text)
   Pop $CasperSelection  
+  
+; CasperSlider - TrackBar
+  ; !define TBM_SETPOS 0x0405
+  ; !define TBM_GETPOS 0x0400
+  ; !define TBM_SETRANGEMIN 0x0407
+  ; !define TBM_SETRANGEMAX 0x0408
 
   ${NSD_CreateLabel} 52% 178 25% 25 ""
   Pop $SlideSpot  
@@ -420,7 +448,7 @@ Function SelectionsPage
   Pop $CasperSlider
 
   SendMessage $CasperSlider ${TBM_SETRANGEMIN} 1 0 ; Min Range Value 0
-  SendMessage $CasperSlider ${TBM_SETRANGEMAX} 1 $RemainingSpace ; Max Range Value
+  SendMessage $CasperSlider ${TBM_SETRANGEMAX} 1 $RemainingSpace ; Max Range Value $RemainingSpace
   ${NSD_OnNotify} $CasperSlider onNotify_CasperSlider  
 
 ; Add Home Link
@@ -437,6 +465,15 @@ Function SelectionsPage
   ${NSD_CreateLink} 25% 215 30% 15 "Recommended Flash Drives"
   Pop $Link2
   ${NSD_OnClick} $LINK2 onClickMyLinkUSB  
+
+;; Add a custom donate button
+;   ${NSD_CreateBitmap} 80% 125 20% 50 "PayPal Donation"
+;   Var /Global Donate
+;   Var /Global DonateHandle  
+;   Pop $Donate
+;   ${NSD_SetImage} $Donate $PLUGINSDIR\paypal.bmp $DonateHandle 
+;  GetFunctionAddress $DonateHandle OnClickDonate
+;  nsDialogs::OnClick $Donate $DonateHandle  
   
 ; Disable Next Button until a selection is made for all 
   GetDlgItem $6 $HWNDPARENT 1
@@ -461,8 +498,13 @@ Function SelectionsPage
   ShowWindow $Uninstaller 0
   ShowWindow $Wipe 0
   nsDialogs::Show 
+;  ${NSD_FreeImage} $DonateHandle
  ${EndIf}
 FunctionEnd
+
+; Function OnClickDonate
+;   ExecShell "open" "https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=T6K3C62LC5TCG"
+; FunctionEnd 
 
 Function InstFiles_PreFunction
   StrCpy $R8 3
@@ -475,7 +517,18 @@ FunctionEnd
 
 Function ListAllDrives ; Set to Display All Drives
   SendMessage $DestDriveTxt ${CB_RESETCONTENT} 0 0 
-   ${GetDrives} "FDD+HDD" DrivesList								  
+  ${NSD_GetState} $AllDriveOption $DisplayAll
+  ${If} $DisplayAll == ${BST_CHECKED}
+  ${NSD_Check} $AllDriveOption
+  ${NSD_SetText} $AllDriveOption "Showing All Drives" 
+   StrCpy $ShowAll "YES"
+   ${GetDrives} "FDD+HDD" DrivesList ; All Drives Listed  
+  ${ElseIf} $DisplayAll == ${BST_UNCHECKED}
+  ${NSD_Uncheck} $AllDriveOption
+  ${NSD_SetText} $AllDriveOption "Show All Drives?"  
+	 ${GetDrives} "FDD" DrivesList ; FDD+HDD reduced to FDD for removable media only
+	StrCpy $ShowAll "NO"
+  ${EndIf}
 FunctionEnd
 
 Function onClickMyLink
@@ -513,7 +566,7 @@ FunctionEnd
 Function EnableNext ; Enable Install Button
   ;${If} $Blocksize >= 4 
   ${If} $Removal != "Yes"
-  ;${AndIf} $HDDUSB != "HDD"
+  ${AndIf} $HDDUSB != "HDD"
     ${If} $FormatMe == "YES" 
     ShowWindow $Format 1 
     ${EndIf}
@@ -664,7 +717,7 @@ Function GrabNameOnly
     Exch $0 ; output string
 FunctionEnd
 
-; !include StrContains.nsh ; Let's check if a * wildcard exists
+ !include StrContains.nsh ; Let's check if a * wildcard exists
  
 ; On Selection of Linux Distro
 Function OnSelectDistro
@@ -805,22 +858,11 @@ Function ISOBrowse
  ${EndIf}
  Call EnableNext
  ; Uncomment for Testing --> MessageBox MB_ICONQUESTION|MB_OK 'Removal: "$Removal"  ISOFileName: "$ISOFileName" ISOFile "$ISOFile" BootDir: "$BootDir" DestDisk: "$DestDisk" DestDrive: "$DestDrive" ISOTest: "$ISOTest"'
+  
   ${If} $FSType != "NTFS"
   ${AndIf} $FormatMe != "Yes"
   ${AndIf} $DistroName == "Windows to Go (Virtual Hard Disk)"
   MessageBox MB_ICONSTOP|MB_OK "WARNING! ($DestDisk) is not NTFS formatted. NTFS is required for the Windows to Go option to work."
- 
-   ${ElseIf} $FSType != "NTFS"
-   ${AndIf} $FormatMe != "Yes"
-   
-   ${If} $DistroName == "Sergei Strelec"
-   ${OrIf} $DistroName == "Try Unlisted ISO (GRUB Partition 4)"
-   ${OrIf} $DistroName == "Try Unlisted ISO (GRUB)"
-     ${If} $SizeOfCasper > "4096"
-     MessageBox MB_OK|MB_ICONINFORMATION "The ISO is greater than 4GB. You must use NTFS format."
-     ${EndIf}
-	${EndIf}
-	 
   ${EndIf}  
  FunctionEnd
 
@@ -870,7 +912,7 @@ Function Uninstall
 	SendMessage $6 ${WM_SETTEXT} 0 "STR:Remove"
 	EnableWindow $6 0 ; Disable "Install" control button
   ${NSD_SetText} $Uninstaller "You're in Uninstaller Mode!"
-    SendMessage $Distro ${CB_RESETCONTENT} 0 0 ; Clear all distro entries because a new option may have been chosen ; Enable for DropBox
+    SendMessage $Distro ${CB_RESETCONTENT} 0 0 ; was ${NSD_LB_Clear} $Distro "" ; Clear all distro entries because a new option may have been chosen ; Enable for DropBox
      StrCpy $Checker "Yes"   
 	 Call RemovalList
 
@@ -891,15 +933,11 @@ Function Uninstall
   StrCpy $Removal "No"  
   ${NSD_SetText} $Uninstaller "View or Remove Installed Distros?" 
    ${NSD_SetText} $LinuxDistroSelection "Step 2: Select a Distribution to put on $DestDisk" 
-     SendMessage $Distro ${CB_RESETCONTENT} 0 0  ; Clear all distro entries because a new option may have been chosen ; Enable for DropBox
+     SendMessage $Distro ${CB_RESETCONTENT} 0 0  ; was ${NSD_LB_Clear} $Distro "" ; Clear all distro entries because a new option may have been chosen ; Enable for DropBox
      StrCpy $Checker "Yes"         
      Call SetISOFileName
   ${EndIf}  
 FunctionEnd
-
-;Function TEST
-;  MessageBox MB_ICONSTOP|MB_OK "Triggered" 
-;FunctionEnd
 
 ; On Selection of USB Drive
 Function OnSelectDrive
@@ -909,7 +947,7 @@ Function OnSelectDrive
   StrCpy $JustDrive $DestDrive 3  
   StrCpy $BootDir $DestDrive 2 ;was -1 
   StrCpy $DestDisk $DestDrive 2 ;was -1
-  ;StrCpy $HDDUSB $Letters "" -3 
+  StrCpy $HDDUSB $Letters "" -3 
   
   StrCpy $9 $JustDrive
   Call GetFSType
@@ -930,7 +968,7 @@ Function OnSelectDrive
   ${EndIf}      
   
   
-  SendMessage $Distro ${CB_RESETCONTENT} 0 0 ; Clear all distro entries because a new drive may have been chosen ; Enable for DropBox
+  SendMessage $Distro ${CB_RESETCONTENT} 0 0 ; was ${NSD_LB_Clear} $Distro "" ; Clear all distro entries because a new drive may have been chosen ; Enable for DropBox
   StrCpy $Checker "Yes" 
   Call InstallorRemove
   Call SetSpace
@@ -991,10 +1029,8 @@ Function DrivesList
 ;Prevent System Drive from being selected
  StrCpy $7 $WINDIR 3
  ${If} $9 != "$7" 
-  ${AndIf} $DiskNum != "0" ; prevent (Disk 0) from being added... it's most likely the Booted system drive?
-  ${AndIf} $Capacity >= "1" ; Prevent capacity lower than 1GB from being displayed.
-  SendMessage $DestDriveTxt ${CB_ADDSTRING} 0 "STR:$9 (Disk $DiskNum) $VolName $Capacity $FSType" ;$8
-  ;SendMessage $DestDriveTxt ${CB_ADDSTRING} 0 "STR:$9 $VolName $Capacity $2 $8" 
+ SendMessage $DestDriveTxt ${CB_ADDSTRING} 0 "STR:$9 (Disk $DiskNum) $VolName $Capacity $FSType $8" 
+ ;SendMessage $DestDriveTxt ${CB_ADDSTRING} 0 "STR:$9 $VolName $Capacity $2 $8" 
  ${EndIf}
  Push 1 ; must push something - see GetDrives documentation
 FunctionEnd
@@ -1013,7 +1049,7 @@ Function WipeIt ; Set Wipe Disk Option
   ${EndIf}    
 FunctionEnd
   
-Function FormatYes ; If Format is checked, do something 
+Function FormatYes ; If Format is checked, do something
 
   File /oname=$PLUGINSDIR\diskpartformat.txt "diskpartformat.txt"     
   File /oname=$PLUGINSDIR\diskpartwipe1.txt "diskpartwipe1.txt"  
@@ -1027,11 +1063,6 @@ Function FormatYes ; If Format is checked, do something
 ; For NTFS Format ---  
   ${If} $FormatMe == "Yes"
    ${AndIf} $WipeMe == "Yes"
-   
- MessageBox MB_YESNO|MB_ICONEXCLAMATION "YUMI is ready to Wipe (Disk $DiskNum) and NTFS format ($DestDisk).$\r$\nAll partitions and existing data on (Disk $DiskNum) will be deleted.$\r$\n$\r$\nClick YES if you've confirmed that both the drive letter and disk number are correct, or NO to Exit!" IDYES ntfswipeformat
- Quit 
-ntfswipeformat:   
-
 ; Wipes the Entire Disk and reformats it with one NTFS Partition
     ;ToDO - Need to make a checkpoint here to test if is greater than Win XP (Vista or later OS?). XP doesn't support Diskpart on removable disks.
     nsExec::ExecToLog '"DiskPart" /S $PLUGINSDIR\diskpartwipe1.txt' 
@@ -1040,23 +1071,15 @@ ntfswipeformat:
 	
    ${ElseIf} $FormatMe == "Yes"
 	${AndIf} $WipeMe != "Yes"
-    
- MessageBox MB_YESNO|MB_ICONEXCLAMATION "YUMI is ready to NTFS format ($DestDisk).$\r$\nAll existing data on ($DestDisk) will be deleted.$\r$\n$\r$\nClick YES if you've confirmed that this drive letter is correct and to proceed, or NO to Exit!" IDYES ntfsformatonly
- Quit 
-ntfsformatonly:      
-    
 ; Just format the selected Drive Letter (Volume or Partition) NTFS
+    ;ToDO - Need to make a checkpoint here to test if is greater than Win XP (Vista or later OS?). XP doesn't support Diskpart on removable disks.
     nsExec::ExecToLog '"DiskPart" /S $PLUGINSDIR\diskpartformat.txt' 
-    
+
 ; For Fat32 Format ---  
   ${ElseIf} $FormatMeFat == "Yes"  
    ${AndIf} $WipeMe == "Yes"
-   
- MessageBox MB_YESNO|MB_ICONEXCLAMATION "YUMI is ready to Wipe (Disk $DiskNum) and Fat32 format ($DestDisk).$\r$\nAll partitions and existing data on (Disk $DiskNum) will be deleted.$\r$\n$\r$\nClick YES if you've confirmed that both the drive letter and disk number are correct, or NO to Exit!" IDYES fatwipeformat
- Quit 
-fatwipeformat:     
-   
 ; Wipes the Entire Disk and reformats it with one Fat32 Partition  
+   ;ToDO - Need to make a checkpoint here to test if is greater than Win XP (Vista or later OS?). XP doesn't support Diskpart on removable disks.
    nsExec::ExecToLog '"DiskPart" /S $PLUGINSDIR\diskpartwipe1.txt' 
    Sleep 3000
    nsExec::ExecToLog '"DiskPart" /S $PLUGINSDIR\diskpartwipe2.txt' 
@@ -1066,11 +1089,6 @@ fatwipeformat:
    
   ${ElseIf} $FormatMeFat == "Yes"  
    ${AndIf} $WipeMe != "Yes"   
-   
- MessageBox MB_YESNO|MB_ICONEXCLAMATION "YUMI is ready to Fat32 format ($DestDisk).$\r$\nAll existing data on ($DestDisk) will be deleted.$\r$\n$\r$\nClick YES if you've confirmed that this drive letter is correct and to proceed, or NO to Exit!" IDYES fatformatonly
- Quit 
-fatformatonly: 
-   
 ; Just Fat32 format the selected Drive Letter (Volume or Partition)	 
    Call Lock_Only ; Just get a lock on the Volume 
    Sleep 3000
@@ -1092,6 +1110,10 @@ Function FormatIt ; Set Format Option
   ${NSD_SetText} $FormatFat "Fat32 Format $DestDisk"  
    ShowWindow $Format 1
    StrCpy $FormatMeFat "No"
+   
+  ;${NSD_Uncheck} $Wipe
+  ;${NSD_SetText} $Wipe "Wipe Disk $DiskNum"  
+  ; StrCpy $WipeMe "No"
 
    ShowWindow $Uninstaller 1 ; Re-enable Uninstaller option.
    StrCpy $Checker "Yes" 
@@ -1109,6 +1131,10 @@ Function FormatIt ; Set Format Option
   ${NSD_SetText} $Format "NTFS Format $DestDisk"  
    ShowWindow $FormatFat 1
    StrCpy $FormatMe "No"
+   
+  ;${NSD_Uncheck} $Wipe ; Set Wipe Disk options 
+  ;${NSD_SetText} $Wipe "Wipe Disk $DiskNum"  
+  ; StrCpy $WipeMe "No"
 
     ShowWindow $Uninstaller 1 ; Re-enable Uninstaller option.
 	StrCpy $Checker "Yes" 
@@ -1185,29 +1211,26 @@ Function SetSpace ; Set space available for persistence
  ${If} $FSType != "NTFS"
  ${OrIf} $FormatMeFat == "Yes"
  ${AndIf} $FormatMe != "Yes"
-  ;MessageBox MB_ICONSTOP|MB_OK "$Casper - - $FormatMeFat"
+ 
+  ;MessageBox MB_ICONSTOP|MB_OK "$Casper - $FormatMeFat"
   Call FreeDiskSpace
   IntOp $MaxPersist 4090 + $CasperSize ; Space required for distro and 4GB max persistent file
-   ${If} $1 > $MaxPersist ; Check if more space is available than we need for distro + 4GB persistent file
-   StrCpy $RemainingSpace 4090 ; Set maximum possible value to 4090 MB (any larger wont work on fat32 Filesystem)
-   ${Else}
-   StrCpy $RemainingSpace "$1"
-   IntOp $RemainingSpace $RemainingSpace - $SizeOfCasper ; Remaining space minus distro size
-   ${EndIf}
-
+  ${If} $1 > $MaxPersist ; Check if more space is available than we need for distro + 4GB persistent file
+  StrCpy $RemainingSpace 4090 ; Set maximum possible value to 4090 MB (any larger wont work on fat32 Filesystem)
+  ${Else}
+  StrCpy $RemainingSpace "$1"
+  IntOp $RemainingSpace $RemainingSpace - $SizeOfCasper ; Remaining space minus distro size
+  ${EndIf}
+  IntOp $RemainingSpace $RemainingSpace - 1 ; Subtract 1MB so that we don't error for not having enough space
+  SendMessage $CasperSlider ${TBM_SETRANGEMAX} 1 $RemainingSpace ; Re-Setting Max Value
+  
  ${Else}  
   Call FreeDiskSpace
-  IntOp $MaxPersist 20450 + $CasperSize ; Space required for distro and 20GB max persistent file
-   ${If} $1 > $MaxPersist ; Check if more space is available than we need for distro + 4GB persistent file
-   StrCpy $RemainingSpace 20450 ; Set maximum possible value to 20450 MB
-   ${Else}
-   StrCpy $RemainingSpace "$1"
-   IntOp $RemainingSpace $RemainingSpace - $SizeOfCasper ; Remaining space minus distro size
-   ${EndIf}
-
+  StrCpy $RemainingSpace "$1"
+  IntOp $RemainingSpace $RemainingSpace - $SizeOfCasper ; Remaining space minus distro size
+  IntOp $RemainingSpace $RemainingSpace - 1 ; Subtract 1MB so that we don't error for not having enough space
+  SendMessage $CasperSlider ${TBM_SETRANGEMAX} 1 $RemainingSpace ; Re-Setting Max Value 
  ${EndIf} 
-   IntOp $RemainingSpace $RemainingSpace - 1 ; Subtract 1MB so that we don't error for not having enough space
-   SendMessage $CasperSlider ${TBM_SETRANGEMAX} 1 $RemainingSpace ; Re-Setting Max Value 
 FunctionEnd
 
 Function HaveSpacePre ; Check space required
@@ -1350,6 +1373,16 @@ Function DoSyslinux ; Install Syslinux on USB
   CopyFiles "$PLUGINSDIR\libcom32.c32" "$BootDir\multiboot\libcom32.c32"  
   CopyFiles "$PLUGINSDIR\libutil.c32" "$BootDir\multiboot\libutil.c32"      
   CopyFiles "$PLUGINSDIR\memdisk" "$BootDir\multiboot\memdisk"
+ 
+; Copy these files to multiboot\menu
+  ; DetailPrint "Adding required files to the $BootDir\multiboot\menu directory..." 
+  ; CopyFiles "$PLUGINSDIR\vesamenu.c32" "$BootDir\multiboot\menu\vesamenu.c32"
+  ; CopyFiles "$PLUGINSDIR\menu.c32" "$BootDir\multiboot\menu\menu.c32"  
+  ; CopyFiles "$PLUGINSDIR\chain.c32" "$BootDir\multiboot\menu\chain.c32"
+  ; CopyFiles "$PLUGINSDIR\libcom32.c32" "$BootDir\multiboot\menu\libcom32.c32"  
+  ; CopyFiles "$PLUGINSDIR\libutil.c32" "$BootDir\multiboot\menu\libutil.c32"   
+  ; CopyFiles "$PLUGINSDIR\memdisk" "$BootDir\multiboot\menu\memdisk"   
+  
   Call AddDir    
   ${EndIf}  
   
@@ -1365,17 +1398,39 @@ Function DoSyslinux ; Install Syslinux on USB
   CopyFiles "$PLUGINSDIR\libcom32.c32" "$BootDir\multiboot\libcom32.c32"  
   CopyFiles "$PLUGINSDIR\libutil.c32" "$BootDir\multiboot\libutil.c32"   
   CopyFiles "$PLUGINSDIR\memdisk" "$BootDir\multiboot\memdisk"
- ${EndIf}    
+; Copy these files to multiboot\menu
+  ; DetailPrint "Adding required files to the $BootDir\multiboot\menu directory..." 
+  ; CopyFiles "$PLUGINSDIR\vesamenu.c32" "$BootDir\multiboot\menu\vesamenu.c32"
+  ; CopyFiles "$PLUGINSDIR\menu.c32" "$BootDir\multiboot\menu\menu.c32"  
+  ; CopyFiles "$PLUGINSDIR\chain.c32" "$BootDir\multiboot\menu\chain.c32"
+  ; CopyFiles "$PLUGINSDIR\libcom32.c32" "$BootDir\multiboot\menu\libcom32.c32"  
+  ; CopyFiles "$PLUGINSDIR\libutil.c32" "$BootDir\multiboot\menu\libutil.c32"   
+  ; CopyFiles "$PLUGINSDIR\memdisk" "$BootDir\multiboot\menu\memdisk"   
+ ${EndIf}  
+  
+  ; ${IfNot} ${FileExists} $BootDir\multiboot\menu\vesamenu.c32
+;; Copy these files to multiboot\menu
+  ; DetailPrint "Adding required files to the $BootDir\multiboot\menu directory..." 
+  ; CopyFiles "$PLUGINSDIR\vesamenu.c32" "$BootDir\multiboot\menu\vesamenu.c32"
+  ; CopyFiles "$PLUGINSDIR\menu.c32" "$BootDir\multiboot\menu\menu.c32"  
+  ; CopyFiles "$PLUGINSDIR\chain.c32" "$BootDir\multiboot\menu\chain.c32"
+  ; CopyFiles "$PLUGINSDIR\memdisk" "$BootDir\multiboot\menu\memdisk"   
+  ; ${EndIf}    
 
 ; Check to ensure menu.c32 exists... now required for YUMI V2
   ${IfNot} ${FileExists} $BootDir\multiboot\menu.c32
    DetailPrint "Adding menu.c32. Required for YUMI V2"
    CopyFiles "$PLUGINSDIR\menu.c32" "$BootDir\multiboot\menu.c32" 
-  ${EndIf}	   
+  ${EndIf}	  
 FunctionEnd
 
 Function AddDir ; changes to check if user had a version prior to 0.0.0.3. Newer YUMI includes grub.exe 
  ${IfNotThen} ${FileExists} "$BootDir\multiboot\grub.exe" 'CopyFiles "$PLUGINSDIR\grub.exe" "$BootDir\multiboot\grub.exe"' 
+; Windows/Ubuntu SOURCES conflict fix
+ ;${IfNot} ${FileExists} $BootDir\.disk\info 
+  ; CreateDirectory $BootDir\.disk 
+  ; CopyFiles "$PLUGINSDIR\info" "$BootDir\.disk\info"
+ ;${EndIf} 
 FunctionEnd
 
 ; ---- Let's Do This Stuff ----
@@ -1386,16 +1441,52 @@ Push 1
 Call GrabNameOnly
 Pop $NameThatISO
 
- ${If} $DiskNum == "0" 
-  MessageBox MB_ICONEXCLAMATION|MB_OK "YUMI will not attempt to install on (Disk $DiskNum). Did you select a drive?"
-  Quit
- ${EndIf}
-
  ${If} ${FileExists} "$BootDir\windows\system32" ; Additional safeguard to prevent installation to a Windows partition.
-  MessageBox MB_ICONSTOP|MB_OK "ABORTING! ($DestDisk) contains a WINDOWS/SYSTEM32 Directory."
-  Quit
+ MessageBox MB_ICONSTOP|MB_OK "ABORTING! ($DestDisk) contains a WINDOWS/SYSTEM32 Directory."
+ Quit
  ${EndIf}
-
+ 
+ ${If} $DistroName == "Try Unlisted ISO (GRUB Partition 4)" 
+ ${OrIf} $DistroName == "Antergos"
+ ${OrIf} $DistroName == "Bitdefender Rescue CD"
+ ${OrIf} $DistroName == "CentOS Installer"
+ ${OrIf} $DistroName == "CentOS Live"
+ ${OrIf} $DistroName == "Ubuntu Mini (Netboot Installer)"
+ ${OrIf} $DistroName == "Wifislax (Wireless Penetration Testing)"
+ ${OrIf} $DistroName == "OSFClone (Disk Cloning Tool)"
+ ${OrIf} $DistroName == "NetRunner"
+ ${OrIf} $DistroName == "Quick Save Live (Recovery Tool)" 
+ ${OrIf} $DistroName == "Norton Bootable Recovery Tool"
+ ${OrIf} $DistroName == "Manjaro" 
+ ${OrIf} $DistroName == "OpenSUSE" 
+ ${OrIf} $DistroName == "Dr.Web LiveDisk" 
+ ${OrIf} $DistroName == "BionicPup"  
+ ${OrIf} $DistroName == "Emmabuntus"  
+ ${OrIf} $DistroName == "Solus" 
+ ${OrIf} $DistroName == "GeckoLinux"
+ ${OrIf} $DistroName == "Kaspersky Rescue Disk (Antivirus Scanner)"
+ ${OrIf} $DistroName == "Kodachi (Anonymous Browsing)"
+ ${OrIf} $DistroName == "WifiWay (Wireless Penetration Testing)"
+ ${OrIf} $DistroName == "Pop!_OS"  
+ ${OrIf} $DistroName == "KaOS"
+ ${OrIf} $DistroName == "VyOS (Router OS)"
+ ${OrIf} $DistroName == "Raspberry Pi Desktop"
+ ${OrIf} $DistroName == "Fedora"  
+ ${OrIf} $DistroName == "Devuan" 
+ ${OrIf} $DistroName == "Vinari OS" 
+ ${OrIf} $DistroName == "Finnix" 
+ ${OrIf} $DistroName == "KDE Neon"   
+ ${OrIf} $DistroName == "OpenMandriva"    
+ ${OrIf} $DistroName == "Clonezilla (Backup + Clone Tool)" 
+ ${OrIf} $DistroName == "Parrot OS"  
+ ${OrIf} $DistroName == "Clear Linux"   
+ ${OrIf} $DistroName == "Alpine Linux"   
+ 
+ MessageBox MB_YESNO|MB_ICONEXCLAMATION "This option creates a 4th partition table on ($DestDisk)$\r$\n$\r$\nIt is up to you to ensure that a 4th partition doesn't already exist on ($DestDisk). If it exists, it could be overwritten.$\r$\n$\r$\nClick YES to accept these actions or NO to Go Back!" IDYES checkpoint
+ Quit
+ ${EndIf}
+ 
+checkpoint:
 ; Wipe and Format ---
  ${If} $FormatMe == "Yes" 
   ${AndIf} $WipeMe == "Yes" 
@@ -1426,12 +1517,11 @@ Pop $NameThatISO
 
 proceed: 
  ${IfThen} $Removal == "Yes" ${|} Goto removeonly ${|}
-  ${If} $DiskNum != "0"
-   Call FormatYes ; Format the Drive?
-   Call HaveSpace ; Got enough Space? Lets Check! 
-   Call DoSyslinux ; Run Syslinux on the Drive to make it bootable
-   Call LocalISODetected
-  ${EndIf}
+ Call FormatYes ; Format the Drive?
+ Call HaveSpace ; Got enough Space? Lets Check! 
+ Call DoSyslinux ; Run Syslinux on the Drive to make it bootable
+ Call LocalISODetected
+ 
 ; Copy the config file if it doesn't exist and create the entry in syslinux.cfg 
  ${IfNot} ${FileExists} "$BootDir\multiboot\menu\$Config2Use" 
  CopyFiles "$PLUGINSDIR\$Config2Use" "$BootDir\multiboot\menu\$Config2Use"
@@ -1566,7 +1656,7 @@ FunctionEnd
 ; --- Stuff to do at startup of script ---
 Function .onInit
 StrCpy $R9 0 ; we start on page 0
-;StrCpy $InstallButton ""				   
+;StrCpy $InstallButton ""
  StrCpy $FileFormat "ISO"
  userInfo::getAccountType
  Pop $Auth
@@ -1643,7 +1733,7 @@ Function SetISOSize ; Get size of ISO
  System::Int64Op $1 / 1048576 ; convert to MB
  Pop $1
  StrCpy $SizeOfCasper "$1"
-; MessageBox MB_OK|MB_ICONINFORMATION "ISO Size: $SizeOfCasper"
+ ;MessageBox MB_OK|MB_ICONINFORMATION "ISO Size: $SizeOfCasper"
  System::Call 'kernel32::CloseHandle(i r0)'
 FunctionEnd
 

@@ -1,0 +1,5 @@
+; Created by Rufus 3.14.1788 
+; https://rufus.ie
+[Autorun]
+icon=rufus.ico,0
+label = GIT-USB

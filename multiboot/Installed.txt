@@ -1,0 +1,4 @@
+Win10AIO
+Win8.1_EnglishInternational_x64
+XP-SP2
+Win7Sp1x64

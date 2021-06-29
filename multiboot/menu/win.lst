@@ -1,0 +1,35 @@
+# This Menu created with YUMI https://www.pendrivelinux.com
+default 1
+timeout 30
+color NORMAL HIGHLIGHT HELPTEXT HEADING
+foreground=FFFFFF
+background=000000
+title --- Windows Installers ---
+root
+title <-- Back to Main Menu
+root (hd0,0)
+chainloader (hd0)+1
+rootnoverify (hd0)
+#start Win10AIO
+title Install Win10AIO - bootmgr at root
+dd if=()/multiboot/Win10AIO/boot/bcd of=()/boot/bcd
+dd if=()/multiboot/Win10AIO/efi/microsoft/boot/bcd of=()/efi/microsoft/boot/bcd
+chainloader /multiboot/Win10AIO/bootmgr
+#end Win10AIO
+#start Win8.1_EnglishInternational_x64
+title Install Win8.1_EnglishInternational_x64 - bootmgr at root
+dd if=()/multiboot/Win8.1_EnglishInternational_x64/boot/bcd of=()/boot/bcd
+dd if=()/multiboot/Win8.1_EnglishInternational_x64/efi/microsoft/boot/bcd of=()/efi/microsoft/boot/bcd
+chainloader /multiboot/Win8.1_EnglishInternational_x64/bootmgr
+#end Win8.1_EnglishInternational_x64
+#start Win7Sp1x64
+title Install Win7Sp1x64 - bootmgr at root
+dd if=()/multiboot/Win7Sp1x64/boot/bcd of=()/boot/bcd
+dd if=()/multiboot/Win7Sp1x64/efi/microsoft/boot/bcd of=()/efi/microsoft/boot/bcd
+chainloader /multiboot/Win7Sp1x64/bootmgr
+#end Win7Sp1x64
+#start WinXpSp3
+title Install WinXpSp3 - bootmgr at root
+dd if=()/multiboot/WinXpSp3/boot/bcd of=()/boot/bcd
+chainloader /multiboot/WinXpSp3/bootmgr
+#end WinXpSp3

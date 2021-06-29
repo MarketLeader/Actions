@@ -28,8 +28,8 @@ dd if=()/multiboot/Win7Sp1x64/boot/bcd of=()/boot/bcd
 dd if=()/multiboot/Win7Sp1x64/efi/microsoft/boot/bcd of=()/efi/microsoft/boot/bcd
 chainloader /multiboot/Win7Sp1x64/bootmgr
 #end Win7Sp1x64
-#start WinXpSp3
-title Install WinXpSp3 - bootmgr at root
-dd if=()/multiboot/WinXpSp3/boot/bcd of=()/boot/bcd
-chainloader /multiboot/WinXpSp3/bootmgr
-#end WinXpSp3
+#start Win2k3Sp2
+title Install Win2k3Sp2 - bootmgr at root
+dd if=()/multiboot/Win2k3Sp2/boot/bcd of=()/boot/bcd
+chainloader /multiboot/Win2k3Sp2/bootmgr
+#end Win2k3Sp2

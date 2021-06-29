@@ -5,6 +5,7 @@ Win*/
 
 # Dependency
 build/
+PortableApps/
 node_modules/
 jspm_packages/
 nvvp_workspace/

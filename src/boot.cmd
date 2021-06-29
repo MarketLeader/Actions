@@ -1,4 +1,4 @@
-REM This file was created for YUMI
+REM This file was created by Lance @ https://www.pendrivelinux.com for YUMI
 @echo off
 cls
  cd VHDDISK:\windows\system32

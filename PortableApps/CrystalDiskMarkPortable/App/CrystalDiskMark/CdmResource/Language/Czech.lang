@@ -1,0 +1,90 @@
+[Information]
+; (Latest Translator, First Translator, Second Translator ...)
+TRANSLATOR=Juris, AxelSh
+VERSION=8.0.0
+
+[Language]
+LANGUAGE=Česky
+CHARACTER_CODE=Unicode (UTF-16, LE, w/ BOM)
+LOCALE_ID=0x0405
+
+[Menu]
+FILE=&Soubor
+FILE_EXIT=&Ukončit
+EDIT=&Úpravy
+EDIT_COPY=&Kopírovat
+THEME=&Vzhled
+HELP=&Nápověda
+HELP_ABOUT=&O programu CrystalDiskMark
+LANGUAGE=Jazyk
+ZOOM=&Zvětšení
+AUTO=&Auto
+TEST_DATA=Testovací data
+DEFAULT_RANDOM=Výchozí (různé)
+SETTINGS=&Nastavení
+SAVE=&Uložit
+QUEUES_THREADS=&Fronty && Vlákna
+INTERVAL_TIME=Časový interval
+SECOND=sek
+MINUTE=min
+HOUR=hod
+ALL_ZERO=Vše 0x00 (zaplnit 0)
+SELECT_FOLDER=Vybrat složku
+FONT_SETTING=&Nastavení písma
+PROFILE=&Profil
+PROFILE_DEFAULT=&Výchozí
+PROFILE_PEAK=&Nejvyšší výkon
+PROFILE_REAL=&Realný výkon
+; 8.0.0
+SAVE_TEXT=Uložit （&text）
+SAVE_IMAGE=&Uložit （obrázek）
+PROFILE_DEMO=D&emo
+
+[Message]
+STOP_BENCHMARK=Zastavit testování.
+DISK_CAPACITY_ERROR=Na disku není dost místa.
+DISK_CREATE_FILE_ERROR=Chyba při vytvářeni souboru.
+DISK_WRITE_ERROR=Chyba při zápisu.
+DISK_READ_ERROR=Chyba při čtení.
+DISK_SPD_NOT_FOUND=DiskSpd nebyl nalezen. Prosím přeinstalujte CrystalDiskMark.
+
+[Title]
+TEST_DRIVE=Testovaný disk
+TEST_SIZE=Testovací velikost
+TEST_COUNT=Počet testů
+TEST_UNIT=Jednotky
+TEST_MIX=Mix Ratio
+; 8.0.0
+TEST_MODE=Testovací mód
+
+[WindowTitle]
+ABOUT=O programu CrystalDiskMark
+QUEUES_THREADS=Fronty & Vlákna
+FONT_SETTING=Nastavení písma
+COMMENT=Komentář
+; 8.0.0
+SETTINGS=Nastavení
+
+[Dialog]
+DEFAULT=Výchozí
+AUTO=Auto
+FONT_FACE=Typ písma
+FONT_SCALE=Měřítko písma (%)
+FONT_RENDER_METHOD=Metoda vykreslení
+BLOCK_SIZE=Velikost bloku
+QUEUES=Fronty
+THREADS=Vlákna
+SEQUENTIAL_1=Sequential (1)
+SEQUENTIAL_2=Sequential (2)
+RANDOM_1=Random (1)
+RANDOM_2=Random (2)
+DEFAULT_AFFINITY=Výchozí spřažení
+ENABLED=Povoleno
+DISABLED=Zakázano
+; 8.0.0
+TYPE=Typ
+PROFILE_DEFAULT=Profil: Výchozí
+PROFILE_PEAK_PERFORMANCE=Profil: Nejvyšší výkon
+PROFILE_DEMO=Profil:Demo
+MEASURE_TIME=Délka měřění (sek)
+INTERVAL_TIME=Časový interval (sek)

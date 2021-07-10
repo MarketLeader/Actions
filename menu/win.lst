@@ -17,7 +17,7 @@ map (hd1) (hd0)
 map --hook
 kernel (hd1,0)/multiboot/wimboot
 kernel (hd1,0)/multiboot/wimboot
-initrd @bootmgr=(hd1,0)/multiboot/Win10Pro/bootmgr @bcd=(hd1,0)/multiboot/Win10Pro/boot/bcd @boot.sdi=(hd1,0)/multiboot/Win10Pro/boot/boot.sdi @boot.wim=(hd1,0)/multiboot/Win10Pro/sources/boot.wim
+initrd @bootmgr=(hd1,0)/multiboot/packages/Win10Pro/bootmgr @bcd=(hd1,0)/multiboot/packages/Win10Pro/boot/bcd @boot.sdi=(hd1,0)/multiboot/packages/Win10Pro/boot/boot.sdi @boot.wim=(hd1,0)/multiboot/packages/Win10Pro/sources/boot.wim
 #end Win10Pro
 title
 root

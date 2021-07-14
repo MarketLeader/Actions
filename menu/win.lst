@@ -6,12 +6,8 @@ foreground=FFFFFF
 background=000000
 title --- Windows Installers ---
 root
-title <-- Back to Main Menu
-root (hd0,0)
-chainloader (hd0)+1
-rootnoverify (hd0)
 #start Win10Pro
-title Install Win10Pro - wimboot
+title Restore Win10Pro - wimboot
 map (hd0) (hd1)
 map (hd1) (hd0)
 map --hook
@@ -19,29 +15,44 @@ kernel (hd1,0)/multiboot/wimboot
 kernel (hd1,0)/multiboot/wimboot
 initrd @bootmgr=(hd1,0)/multiboot/packages/Win10Pro/bootmgr @bcd=(hd1,0)/multiboot/packages/Win10Pro/boot/bcd @boot.sdi=(hd1,0)/multiboot/packages/Win10Pro/boot/boot.sdi @boot.wim=(hd1,0)/multiboot/packages/Win10Pro/sources/boot.wim
 #end Win10Pro
+#start Win11Pro
+title Install Win11Pro - wimboot
+map (hd0) (hd1)
+map (hd1) (hd0)
+map --hook
+kernel (hd1,0)/multiboot/wimboot
+kernel (hd1,0)/multiboot/wimboot
+initrd @bootmgr=(hd1,0)/multiboot/packages/Win11Pro/bootmgr @bcd=(hd1,0)/multiboot/packages/Win11Pro/boot/bcd @boot.sdi=(hd1,0)/multiboot/packages/Win11Pro/boot/boot.sdi @boot.wim=(hd1,0)/multiboot/packages/Win11Pro/sources/boot.wim
+#end Win11Pro
 title
 root
 #start WinXp64
-title Begin Install of Windows XP from WinXp64.iso (Stage 1)
+title Boot Windows XP
+map (hd2) (hd0)
+map (hd0) (hd2)
+root (hd2,0)
+find --set-root /ntldr
+chainloader /ntldr
+title Reinstall Windows XP (Stage 1)
 find --set-root /multiboot/ISOS/WinXp64.iso
-map (hd0) (hd1)
-map (hd1) (hd0)
+map (hd0) (hd2)
+map (hd2) (hd0)
 map --mem /multiboot/ISOS/firadisk.img (fd0)
 map --mem /multiboot/ISOS/firadisk.img (fd1)
 map --mem /multiboot/ISOS/WinXp64.iso (0xff)
 map --hook
 chainloader (0xff)/I386/SETUPLDR.BIN
-title Continue Windows XP Install from WinXp64.iso (Stage 2)
+title Reinstall Windows XP (Stage 2)
 find --set-root /multiboot/ISOS/WinXp64.iso
-map (hd0) (hd1)
-map (hd1) (hd0)
+map (hd0) (hd2)
+map (hd2) (hd0)
 map --mem /multiboot/ISOS/WinXp64.iso (0xff)
 map --hook
 chainloader (hd0)+1
-title Boot Windows XP - If fails, reboot with USB removed (Stage 3)
-map (hd1) (hd0)
-map (hd0) (hd1)
-root (hd1,0)
-find --set-root /ntldr
-chainloader /ntldr
 #end WinXp64
+title
+root
+title <-- Back to Main Menu
+root (hd0,0)
+chainloader (hd0)+1
+rootnoverify (hd0)

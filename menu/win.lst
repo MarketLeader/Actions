@@ -27,26 +27,26 @@ initrd @bootmgr=(hd1,0)/multiboot/packages/Win11Pro/bootmgr @bcd=(hd1,0)/multibo
 title
 root
 #start WinXp64
-title Boot Windows XP
-map (hd2) (hd0)
-map (hd0) (hd2)
-root (hd2,0)
-find --set-root /ntldr
-chainloader /ntldr
+#title Boot Windows XP
+#map (hd2) (hd0)
+#map (hd0) (hd2)
+#root (hd2)
+#find --set-root /ntldr
+#chainloader /ntldr
 title Reinstall Windows XP (Stage 1)
-find --set-root /multiboot/ISOS/WinXp64.iso
-map (hd0) (hd2)
-map (hd2) (hd0)
+find --set-root /multiboot/ISOS/Win-Xp64.iso
+map (hd0) (hd1)
+map (hd1) (hd0)
 map --mem /multiboot/ISOS/firadisk.img (fd0)
 map --mem /multiboot/ISOS/firadisk.img (fd1)
-map --mem /multiboot/ISOS/WinXp64.iso (0xff)
+map --mem /multiboot/ISOS/Win-Xp64.iso (0xff)
 map --hook
 chainloader (0xff)/I386/SETUPLDR.BIN
 title Reinstall Windows XP (Stage 2)
-find --set-root /multiboot/ISOS/WinXp64.iso
-map (hd0) (hd2)
-map (hd2) (hd0)
-map --mem /multiboot/ISOS/WinXp64.iso (0xff)
+find --set-root /multiboot/ISOS/Win-Xp64.iso
+map (hd0) (hd1)
+map (hd1) (hd0)
+map --mem /multiboot/ISOS/Win-Xp64.iso (0xff)
 map --hook
 chainloader (hd0)+1
 #end WinXp64
@@ -56,3 +56,7 @@ title <-- Back to Main Menu
 root (hd0,0)
 chainloader (hd0)+1
 rootnoverify (hd0)
+title
+root
+title
+root

@@ -1,0 +1,6 @@
+# This Menu created with YUMI https://www.pendrivelinux.com
+map (hd2) (hd0)
+map (hd0) (hd2)
+map --hook
+find --set-root /ntldr
+chainloader /ntldr

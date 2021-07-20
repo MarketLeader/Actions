@@ -1,6 +1,6 @@
 # This Menu created with YUMI https://www.pendrivelinux.com
-map (hd2) (hd0)
-map (hd0) (hd2)
-map --hook
+map (hd1) (hd0)
+map (hd0) (hd1)
+root (hd0,0)
 find --set-root /ntldr
 chainloader /ntldr

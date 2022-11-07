@@ -28,6 +28,7 @@
 
 # to be ignored in subdirectories
 docs/
+default/
 Dekstop/
 AppData/
 node_modules/

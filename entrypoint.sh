@@ -1,0 +1,182 @@
+#!/bin/bash
+set -e
+export WORKING_DIR=${PWD}
+chown -R $(whoami) ${WORKING_DIR}
+export hr=$(printf '=%.0s' {1..80})
+
+# Initial default value
+TOKEN=${INPUT_TOKEN}
+ACTOR=${INPUT_ACTOR}
+BRANCH=${INPUT_BRANCH}
+REPOSITORY=${INPUT_REPOSITORY}
+OWNER=${GITHUB_REPOSITORY_OWNER}
+PROVIDER=${INPUT_PROVIDER:=github}
+BUNDLER_VER=${INPUT_BUNDLER_VER:=>=0}
+JEKYLL_BASEURL=${INPUT_JEKYLL_BASEURL:=}
+PRE_BUILD_COMMANDS=${INPUT_PRE_BUILD_COMMANDS:=}
+
+# https://stackoverflow.com/a/42137273/4058484
+export JEKYLL_SRC=${WORKING_DIR}
+export JEKYLL_GITHUB_TOKEN=${TOKEN}
+if [[ "${OWNER}" != "eq19" ]]; then
+  export JEKYLL_SRC=${WORKING_DIR}/docs
+fi
+export JEKYLL_CFG=${JEKYLL_SRC}/_config.yml
+sed -i -e "s/eq19/${OWNER}/g" ${JEKYLL_CFG}
+
+if [[ -z "${TOKEN}" ]]; then
+  echo -e "Please set the TOKEN environment variable."
+  exit 1
+fi
+
+# Check parameters and assign default values
+if [[ "${PROVIDER}" == "github" ]]; then
+  : ${BRANCH:=gh-pages}
+  : ${ACTOR:=${GITHUB_ACTOR}}
+  : ${REPOSITORY:=${GITHUB_REPOSITORY}}
+
+  # Check if repository is available
+  if ! echo -e "${REPOSITORY}" | grep -Eq ".+/.+"; then
+    echo -e "The repository ${REPOSITORY} doesn't match the pattern <author>/<repos>"
+    exit 1
+  fi
+fi
+
+# Pre-handle Jekyll baseurl
+if [[ -n "${JEKYLL_BASEURL-}" ]]; then
+  JEKYLL_BASEURL="--baseurl ${JEKYLL_BASEURL}"
+fi
+
+# Initialize environment
+export RUBYOPT=W0
+export RAILS_VERSION=5.0.1
+export BUNDLER_VER=${BUNDLER_VER}
+export BUNDLE_GEMFILE=/maps/Gemfile
+export PATH=${PATH}:/root/.local/bin
+export BUNDLE_SILENCE_ROOT_WARNING=1
+export NOKOGIRI_USE_SYSTEM_LIBRARIES=1
+export PAGES_REPO_NWO=$GITHUB_REPOSITORY
+export REQUIREMENT=/maps/requirements.txt
+export BUNDLE_PATH=${WORKING_DIR}/vendor/bundle
+# export GEM_HOME=/github/home/.gem/ruby/${RUBY_VERSION}
+# export PATH=$PATH:${GEM_HOME}/bin:$HOME/.local/bin
+export SSL_CERT_FILE=$(realpath .github/hook-scripts/cacert.pem)
+
+# identity
+echo -e "\n$hr\nWHOAMI\n$hr"
+whoami
+pwd
+id
+
+# os version
+echo -e "\n$hr\nOS VERSION\n$hr"
+cat /etc/os-release
+uname -r
+
+# file system
+echo -e "\n$hr\nFILE SYSTEM\n$hr"
+df -h
+
+# pckages
+echo -e "$hr\nROOT DIR\n$hr"
+cd / && pwd && ls -al
+
+echo -e "$hr\nPRIOR INSTALLATION\n$hr"
+chown -R root ${HOME}
+source /maps/bin/activate && dpkg -l
+ 
+apt-get install -qq npm &>/dev/null
+npm install --prefix /maps &>/dev/null
+
+apt-get install -qq git &>/dev/null
+git config --global credential.helper store &>/dev/null
+echo "https://{ACTOR}:${TOKEN}@github.com" > ~/.git-credentials
+git clone --recurse-submodules -j8 https://github.com/eq19/feed /maps/feed &>/dev/null
+
+python -m pip install -U --force-reinstall pip &>/dev/null
+apt-get install -qq --no-install-recommends apt-utils &>/dev/null
+pip install -r ${REQUIREMENT} --root-user-action=ignore --quiet &>/dev/null
+
+apt-get install -qq ruby ruby-dev ruby-bundler build-essential &>/dev/null
+gem install rails --version "$RAILS_VERSION" --quiet --silent &>/dev/null
+
+# installed packages
+echo -e "\n$hr\nUPON INSTALLATION\n$hr"
+dpkg -l
+
+# Setting default ruby version
+echo -e "$hr\nTENSORFLOW VERSION\n$hr"
+pip show tensorflow-gpu && pip -V
+
+# https://stackoverflow.com/a/60945404/4058484
+ruby -v && bundler version && python -V
+node -v && npm -v
+
+# Restore modification time (mtime) of git files
+echo -e "$hr\nEPOCH TEST\n$hr"
+/maps/feed/script/restore.sh
+/maps/feed/script/prime_list.sh
+/maps/feed/script/init_environment.sh
+
+# Clean up bundler cache
+CLEANUP_BUNDLER_CACHE_DONE=false
+bundle config path $BUNDLE_PATH
+bundle config cache_all true
+
+cleanup_bundler_cache() {
+  echo -e "\nCleaning up incompatible bundler cache\n"
+  /maps/feed/script/cleanup_bundler.sh &>/dev/null
+  gem install bundler -v "${BUNDLER_VER}" &>/dev/null
+  
+  rm -rf ${BUNDLE_PATH}
+  mkdir -p ${BUNDLE_PATH}
+  
+  bundle install &>/dev/null
+  CLEANUP_BUNDLER_CACHE_DONE=true
+}
+
+# If the vendor/bundle folder is cached in a differnt OS (e.g. Ubuntu),
+# it would cause `jekyll build` failed, we should clean up the uncompatible
+# cache firstly.
+OS_NAME_FILE=${BUNDLE_PATH}/os-name
+os_name=$(cat /etc/os-release | grep '^NAME=')
+os_name=${os_name:6:-1}
+
+if [[ "$os_name" != "$(cat $OS_NAME_FILE 2>/dev/null)" ]]; then
+  cleanup_bundler_cache
+  echo -e $os_name > $OS_NAME_FILE
+fi
+
+# Check and execute pre_build_commands commands
+cd ${JEKYLL_SRC}
+
+if [[ ${PRE_BUILD_COMMANDS} ]]; then
+  eval "${PRE_BUILD_COMMANDS}"
+fi
+
+# https://gist.github.com/DrOctogon/bfb6e392aa5654c63d12
+build_jekyll() {
+  echo -e "\nJEKYLL INSTALLATION\n"
+  pwd
+  JEKYLL_GITHUB_TOKEN=${TOKEN} bundle exec jekyll build --trace --profile \
+    ${JEKYLL_BASEURL} -c ${JEKYLL_CFG} -d ${WORKING_DIR}/build
+}
+
+build_jekyll || {
+  $CLEANUP_BUNDLER_CACHE_DONE && exit -1
+  echo -e "\nRebuild all gems and try to build again\n"
+  cleanup_bundler_cache
+  build_jekyll
+}
+
+# Check if deploy on the same repository branch
+cd ${WORKING_DIR}/build && rm -rf grammar
+if [[ "${PROVIDER}" == "github" ]]; then
+  source "/maps/feed/script/github_pages.sh"
+else
+  echo -e "${PROVIDER} is an unsupported provider."
+  exit 1
+fi
+
+apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* &>/dev/null
+exit $?

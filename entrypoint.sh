@@ -6,10 +6,10 @@ export hr=$(printf '=%.0s' {1..80})
 
 # Initial default value
 TOKEN=${INPUT_TOKEN}
-ACTOR=${INPUT_ACTOR}
-BRANCH=${INPUT_BRANCH}
+ACTOR=${GITHUB_ACTOR}
 REPOSITORY=${INPUT_REPOSITORY}
 OWNER=${GITHUB_REPOSITORY_OWNER}
+BRANCH=${INPUT_BRANCH:=gh-pages}
 PROVIDER=${INPUT_PROVIDER:=github}
 BUNDLER_VER=${INPUT_BUNDLER_VER:=>=0}
 JEKYLL_BASEURL=${INPUT_JEKYLL_BASEURL:=}
@@ -27,19 +27,6 @@ sed -i -e "s/eq19/${OWNER}/g" ${JEKYLL_CFG}
 if [[ -z "${TOKEN}" ]]; then
   echo -e "Please set the TOKEN environment variable."
   exit 1
-fi
-
-# Check parameters and assign default values
-if [[ "${PROVIDER}" == "github" ]]; then
-  : ${BRANCH:=gh-pages}
-  : ${ACTOR:=${GITHUB_ACTOR}}
-  : ${REPOSITORY:=${GITHUB_REPOSITORY}}
-
-  # Check if repository is available
-  if ! echo -e "${REPOSITORY}" | grep -Eq ".+/.+"; then
-    echo -e "The repository ${REPOSITORY} doesn't match the pattern <author>/<repos>"
-    exit 1
-  fi
 fi
 
 # Pre-handle Jekyll baseurl
@@ -91,7 +78,7 @@ npm install --prefix /maps &>/dev/null
 apt-get install -qq git &>/dev/null
 git config --global credential.helper store &>/dev/null
 echo "https://{ACTOR}:${TOKEN}@github.com" > ~/.git-credentials
-git clone --recurse-submodules -j8 https://github.com/eq19/feed /maps/feed &>/dev/null
+git clone --recurse-submodules -j8 ${REPOSITORY} &>/dev/null
 
 python -m pip install -U --force-reinstall pip &>/dev/null
 apt-get install -qq --no-install-recommends apt-utils &>/dev/null
@@ -114,9 +101,9 @@ node -v && npm -v
 
 # Restore modification time (mtime) of git files
 echo -e "$hr\nEPOCH TEST\n$hr"
-/maps/feed/script/restore.sh
-/maps/feed/script/prime_list.sh
-/maps/feed/script/init_environment.sh
+/maps/Scripts/restore.sh
+/maps/Scripts/prime_list.sh
+/maps/Scripts/init_environment.sh
 
 # Clean up bundler cache
 CLEANUP_BUNDLER_CACHE_DONE=false
@@ -125,7 +112,7 @@ bundle config cache_all true
 
 cleanup_bundler_cache() {
   echo -e "\nCleaning up incompatible bundler cache\n"
-  /maps/feed/script/cleanup_bundler.sh &>/dev/null
+  /maps/Scripts/cleanup_bundler.sh &>/dev/null
   gem install bundler -v "${BUNDLER_VER}" &>/dev/null
   
   rm -rf ${BUNDLE_PATH}
@@ -172,7 +159,7 @@ build_jekyll || {
 # Check if deploy on the same repository branch
 cd ${WORKING_DIR}/build && rm -rf grammar
 if [[ "${PROVIDER}" == "github" ]]; then
-  source "/maps/feed/script/github_pages.sh"
+  source "/maps/Scripts/github_pages.sh"
 else
   echo -e "${PROVIDER} is an unsupported provider."
   exit 1

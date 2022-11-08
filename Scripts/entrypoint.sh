@@ -121,26 +121,6 @@ cleanup_bundler_cache() {
   CLEANUP_BUNDLER_CACHE_DONE=true
 }
 
-# If the vendor/bundle folder is cached in a differnt OS (e.g. Ubuntu),
-# it would cause `jekyll build` failed, we should clean up the uncompatible
-# cache firstly.
-OS_NAME_FILE=${BUNDLE_PATH}/os-name
-os_name=$(cat /etc/os-release | grep '^NAME=')
-os_name=${os_name:6:-1}
-
-if [[ "$os_name" != "$(cat $OS_NAME_FILE 2>/dev/null)" ]]; then
-  echo -e "\nCleaning up incompatible bundler cache as $os_name > $OS_NAME_FILE\n"
-  cleanup_bundler_cache
-fi
-
-# Check and execute pre_build_commands commands
-cd ${JEKYLL_SRC}
-
-if [[ ${PRE_BUILD_COMMANDS} ]]; then
-  eval "${PRE_BUILD_COMMANDS}"
-fi
-
-# https://gist.github.com/DrOctogon/bfb6e392aa5654c63d12
 build_jekyll() {
   echo -e "\nJEKYLL INSTALLATION\n" && pwd
   JEKYLL_GITHUB_TOKEN=${TOKEN} bundle exec jekyll build --trace --profile \
@@ -149,7 +129,7 @@ build_jekyll() {
 
 build_jekyll || {
   $CLEANUP_BUNDLER_CACHE_DONE && exit -1
-  echo -e "\nRebuild all gems and try to build again\n"
+  echo -e "\ncleanup_bundler_cache\n"
   cleanup_bundler_cache
   build_jekyll
 }

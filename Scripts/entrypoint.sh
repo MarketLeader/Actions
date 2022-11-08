@@ -44,7 +44,7 @@ export BUNDLE_SILENCE_ROOT_WARNING=1
 export NOKOGIRI_USE_SYSTEM_LIBRARIES=1
 export PAGES_REPO_NWO=$GITHUB_REPOSITORY
 export REQUIREMENT=/maps/requirements.txt
-export BUNDLE_PATH=${WORKING_DIR}/vendor/bundle
+export VENDOR_BUNDLE=${WORKING_DIR}/vendor/bundle
 # export GEM_HOME=/github/home/.gem/ruby/${RUBY_VERSION}
 # export PATH=$PATH:${GEM_HOME}/bin:$HOME/.local/bin
 export SSL_CERT_FILE=$(realpath .github/hook-scripts/cacert.pem)
@@ -107,7 +107,7 @@ echo -e "$hr\nEPOCH TEST\n$hr"
 
 # Clean up bundler cache
 CLEANUP_BUNDLER_CACHE_DONE=false
-bundle config path $BUNDLE_PATH
+bundle config path $VENDOR_BUNDLE
 bundle config cache_all true
 
 cleanup_bundler_cache() {
@@ -115,8 +115,8 @@ cleanup_bundler_cache() {
   /maps/Scripts/cleanup_bundler.sh
   gem install bundler -v "${BUNDLER_VER}"
   
-  rm -rf ${BUNDLE_PATH}
-  mkdir -p ${BUNDLE_PATH}
+  rm -rf ${VENDOR_BUNDLE}
+  mkdir -p ${VENDOR_BUNDLE}
   
   bundle install
   CLEANUP_BUNDLER_CACHE_DONE=true
@@ -125,7 +125,7 @@ cleanup_bundler_cache() {
 # If the vendor/bundle folder is cached in a differnt OS (e.g. Ubuntu),
 # it would cause `jekyll build` failed, we should clean up the uncompatible
 # cache firstly.
-OS_NAME_FILE=${BUNDLE_PATH}/os-name
+OS_NAME_FILE=${VENDOR_BUNDLE}/os-name
 os_name=$(cat /etc/os-release | grep '^NAME=')
 os_name=${os_name:6:-1}
 

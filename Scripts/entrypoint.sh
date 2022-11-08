@@ -87,6 +87,7 @@ pip install -r ${REQUIREMENT} --root-user-action=ignore --quiet &>/dev/null
 
 apt-get install -qq ruby ruby-dev ruby-bundler build-essential &>/dev/null
 gem install rails --version "$RAILS_VERSION" --quiet --silent &>/dev/null
+gem install bundler -v "${BUNDLER_VER}" &>/dev/null
 
 # installed packages
 echo -e "\n$hr\nUPON INSTALLATION\n$hr"
@@ -112,18 +113,17 @@ bundle config path $BUNDLE_PATH
 bundle config cache_all true
 
 cleanup_bundler_cache() {
-  CLEANUP_BUNDLER_CACHE_DONE=true
-  /maps/Scripts/cleanup_bundler.sh
-
+  /maps/Scripts/cleanup_bundler.sh &>/dev/null
   rm -rf ${BUNDLE_PATH} && mkdir -p ${BUNDLE_PATH}
-  gem install bundler -v "${BUNDLER_VER}"
-  bundle install
+  
+  bundle install &>/dev/null
+  CLEANUP_BUNDLER_CACHE_DONE=true
 }
 
 build_jekyll() {
   echo -e "\nJEKYLL INSTALLATION\n" && pwd
   JEKYLL_GITHUB_TOKEN=${TOKEN} bundle exec jekyll build --trace --profile \
-    ${JEKYLL_BASEURL} -c ${JEKYLL_CFG} -d ${WORKING_DIR}/build
+    ${JEKYLL_BASEURL} -c ${JEKYLL_CFG} -d ${WORKING_DIR}/build &>/dev/null
 }
 
 build_jekyll || {

@@ -44,7 +44,7 @@ export BUNDLE_SILENCE_ROOT_WARNING=1
 export NOKOGIRI_USE_SYSTEM_LIBRARIES=1
 export PAGES_REPO_NWO=$GITHUB_REPOSITORY
 export REQUIREMENT=/maps/requirements.txt
-export VENDOR_BUNDLE=${WORKING_DIR}/vendor/bundle
+export BUNDLE_PATH=${WORKING_DIR}/vendor/bundle
 # export GEM_HOME=/github/home/.gem/ruby/${RUBY_VERSION}
 # export PATH=$PATH:${GEM_HOME}/bin:$HOME/.local/bin
 export SSL_CERT_FILE=$(realpath .github/hook-scripts/cacert.pem)
@@ -87,6 +87,10 @@ pip install -r ${REQUIREMENT} --root-user-action=ignore --quiet &>/dev/null
 apt-get install -qq ruby ruby-dev ruby-bundler build-essential &>/dev/null
 gem install rails --version "$RAILS_VERSION" --quiet --silent &>/dev/null
 
+# installed packages
+echo -e "\n$hr\nUPON INSTALLATION\n$hr"
+dpkg -l
+
 # Setting default ruby version
 echo -e "$hr\nTENSORFLOW VERSION\n$hr"
 pip show tensorflow-gpu && pip -V
@@ -101,31 +105,27 @@ echo -e "$hr\nEPOCH TEST\n$hr"
 /maps/Scripts/prime_list.sh
 /maps/Scripts/init_environment.sh
 
-# installed packages
-echo -e "\n$hr\nUPON INSTALLATION\n$hr"
-dpkg -l
-
 # Clean up bundler cache
 CLEANUP_BUNDLER_CACHE_DONE=false
-bundle config path $VENDOR_BUNDLE
+bundle config path $BUNDLE_PATH
 bundle config cache_all true
 
 cleanup_bundler_cache() {
   echo -e "\nCleaning up incompatible bundler cache\n"
   /maps/Scripts/cleanup_bundler.sh
-  gem install bundler -v "${BUNDLER_VER}" &>/dev/null
+  gem install bundler -v "${BUNDLER_VER}"
   
-  rm -rf ${VENDOR_BUNDLE}
-  mkdir -p ${VENDOR_BUNDLE}
+  rm -rf ${BUNDLE_PATH}
+  mkdir -p ${BUNDLE_PATH}
   
-  bundle install &>/dev/null
+  bundle install
   CLEANUP_BUNDLER_CACHE_DONE=true
 }
 
 # If the vendor/bundle folder is cached in a differnt OS (e.g. Ubuntu),
 # it would cause `jekyll build` failed, we should clean up the uncompatible
 # cache firstly.
-OS_NAME_FILE=${VENDOR_BUNDLE}/os-name
+OS_NAME_FILE=${BUNDLE_PATH}/os-name
 os_name=$(cat /etc/os-release | grep '^NAME=')
 os_name=${os_name:6:-1}
 
@@ -146,7 +146,7 @@ build_jekyll() {
   echo -e "\nJEKYLL INSTALLATION\n"
   pwd
   JEKYLL_GITHUB_TOKEN=${TOKEN} bundle exec jekyll build --trace --profile \
-    ${JEKYLL_BASEURL} -c ${JEKYLL_CFG} -d ${WORKING_DIR}/build &>/dev/null
+    ${JEKYLL_BASEURL} -c ${JEKYLL_CFG} -d ${WORKING_DIR}/build
 }
 
 build_jekyll || {

@@ -87,7 +87,6 @@ pip install -r ${REQUIREMENT} --root-user-action=ignore --quiet &>/dev/null
 
 apt-get install -qq ruby ruby-dev ruby-bundler build-essential &>/dev/null
 gem install rails --version "$RAILS_VERSION" --quiet --silent &>/dev/null
-gem install bundler -v "${BUNDLER_VER}" &>/dev/null
 
 # installed packages
 echo -e "\n$hr\nUPON INSTALLATION\n$hr"

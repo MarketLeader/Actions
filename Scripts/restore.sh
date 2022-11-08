@@ -21,8 +21,8 @@ mv _layouts ${JEKYLL_SRC}/ && ln -s ${JEKYLL_SRC}/_layouts _layouts
 mv _plugins ${JEKYLL_SRC}/ && ln -s ${JEKYLL_SRC}/_plugins _plugins
 mv _includes ${JEKYLL_SRC}/ && ln -s ${JEKYLL_SRC}/_includes _includes
 
-cd /maps/default/feed/primes/numberGenerator/python/spacetimeengine/src
-mv data ${JEKYLL_SRC}/_data && ln -s ${JEKYLL_SRC}/_data data
+cd /maps/default/datasets
+mv /text ${JEKYLL_SRC}/_data && ln -s ${JEKYLL_SRC}/_data data
 
 cd ${JEKYLL_SRC}/_data/_base
 mv _maps ${JEKYLL_SRC}/ && ln -s ${JEKYLL_SRC}/_maps _maps

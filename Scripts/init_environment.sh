@@ -18,7 +18,7 @@ mkdir /root/.ssh
 # home
 echo -e "\n$hr\nHOME DIR\n$hr"
 echo ${HOME}
-ls -al /home && ls -al /github && ls -al /github/home
+ls -al ${HOME}
 
 # git/config
 cd ${WORKING_DIR}
@@ -35,8 +35,7 @@ cat .git/config
 
 # vendor/bundle
 echo -e "\n$hr\nVENDOR BUNDLE\n$hr"
-echo ${WORKING_DIR}/vendor/bundle/ruby
-ls -al /github/workspace/vendor/bundle/ruby/2.7.0
+echo ${GEM_HOME} && ls -al ${GEM_HOME}
 
 # environtment
 echo -e "\n$hr\nENVIRONTMENT\n$hr"

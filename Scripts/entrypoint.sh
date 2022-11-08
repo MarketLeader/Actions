@@ -36,17 +36,18 @@ fi
 
 # Initialize environment
 export RUBYOPT=W0
-export RAILS_VERSION=5.0.1
+export RUBY_VERSION='2.7.0'
+export RAILS_VERSION='5.0.1'
 export BUNDLER_VER=${BUNDLER_VER}
 export BUNDLE_GEMFILE=/maps/Gemfile
-export PATH=${PATH}:/root/.local/bin
+export BUNDLE_PATH=/github/home/.gem
 export BUNDLE_SILENCE_ROOT_WARNING=1
 export NOKOGIRI_USE_SYSTEM_LIBRARIES=1
 export PAGES_REPO_NWO=$GITHUB_REPOSITORY
 export REQUIREMENT=/maps/requirements.txt
-export BUNDLE_PATH=${WORKING_DIR}/vendor/bundle
-# export GEM_HOME=/github/home/.gem/ruby/${RUBY_VERSION}
-# export PATH=$PATH:${GEM_HOME}/bin:$HOME/.local/bin
+export BUNDLE_GLOBAL_PATH_APPENDS_RUBY_SCOPE=true
+export GEM_HOME=${BUNDLE_PATH}/ruby/${RUBY_VERSION}
+export PATH=$PATH:${GEM_HOME}:/root/.local/bin
 export SSL_CERT_FILE=$(realpath .github/hook-scripts/cacert.pem)
 
 # identity
@@ -111,14 +112,12 @@ bundle config path $BUNDLE_PATH
 bundle config cache_all true
 
 cleanup_bundler_cache() {
-  echo -e "\nCleaning up incompatible bundler cache\n"
-  /maps/Scripts/cleanup_bundler.sh
-  gem install bundler -v "${BUNDLER_VER}"
+  /maps/Scripts/cleanup_bundler.sh &>/dev/null
+  gem install bundler -v "${BUNDLER_VER}" &>/dev/null
   
-  rm -rf ${BUNDLE_PATH}
-  mkdir -p ${BUNDLE_PATH}
+  rm -rf ${BUNDLE_PATH} && mkdir -p ${BUNDLE_PATH}
   
-  bundle install
+  bundle install &>/dev/null
   CLEANUP_BUNDLER_CACHE_DONE=true
 }
 
@@ -130,8 +129,8 @@ os_name=$(cat /etc/os-release | grep '^NAME=')
 os_name=${os_name:6:-1}
 
 if [[ "$os_name" != "$(cat $OS_NAME_FILE 2>/dev/null)" ]]; then
+  echo -e "\nCleaning up incompatible bundler cache as $os_name > $OS_NAME_FILE\n"
   cleanup_bundler_cache
-  echo -e $os_name > $OS_NAME_FILE
 fi
 
 # Check and execute pre_build_commands commands
@@ -143,10 +142,9 @@ fi
 
 # https://gist.github.com/DrOctogon/bfb6e392aa5654c63d12
 build_jekyll() {
-  echo -e "\nJEKYLL INSTALLATION\n"
-  pwd
+  echo -e "\nJEKYLL INSTALLATION\n" && pwd
   JEKYLL_GITHUB_TOKEN=${TOKEN} bundle exec jekyll build --trace --profile \
-    ${JEKYLL_BASEURL} -c ${JEKYLL_CFG} -d ${WORKING_DIR}/build
+    ${JEKYLL_BASEURL} -c ${JEKYLL_CFG} -d ${WORKING_DIR}/build &>/dev/null
 }
 
 build_jekyll || {

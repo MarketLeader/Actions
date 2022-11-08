@@ -10,8 +10,9 @@
 
 !Gemfile
 !version.txt
-!deploy.gemspec
 !package.json
+!Scripts/*.sh
+!deploy.gemspec
 !requirements.txt
 
 # Nor these directories...

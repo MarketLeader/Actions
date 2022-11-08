@@ -112,12 +112,12 @@ bundle config path $BUNDLE_PATH
 bundle config cache_all true
 
 cleanup_bundler_cache() {
-  gem install bundler -v "${BUNDLER_VER}"
+  CLEANUP_BUNDLER_CACHE_DONE=true
   /maps/Scripts/cleanup_bundler.sh
 
   rm -rf ${BUNDLE_PATH} && mkdir -p ${BUNDLE_PATH}
+  gem install bundler -v "${BUNDLER_VER}"
   bundle install
-  CLEANUP_BUNDLER_CACHE_DONE=true
 }
 
 build_jekyll() {

@@ -13,4 +13,5 @@ RUN apt-get install python3.8-venv &>/dev/null
 RUN /usr/bin/python3.8 -m venv /maps &>/dev/null
 
 ADD . /maps
-ENTRYPOINT ["/maps/entrypoint.sh"]
+ENV PATH="${PATH}:/maps/Scripts/"
+ENTRYPOINT ["/maps/Scripts/entrypoint.sh"]

@@ -112,11 +112,10 @@ bundle config path $BUNDLE_PATH
 bundle config cache_all true
 
 cleanup_bundler_cache() {
-  /maps/Scripts/cleanup_bundler.sh &>/dev/null
   gem install bundler -v "${BUNDLER_VER}" &>/dev/null
-  
+  /maps/Scripts/cleanup_bundler.sh &>/dev/null
+
   rm -rf ${BUNDLE_PATH} && mkdir -p ${BUNDLE_PATH}
-  
   bundle install &>/dev/null
   CLEANUP_BUNDLER_CACHE_DONE=true
 }

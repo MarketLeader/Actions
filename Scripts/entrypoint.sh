@@ -111,14 +111,11 @@ bundle config path $VENDOR_BUNDLE
 bundle config cache_all true
 
 cleanup_bundler_cache() {
-  echo -e "\nCleaning up incompatible bundler cache\n"
   /maps/Scripts/cleanup_bundler.sh
-  gem install bundler -v "${BUNDLER_VER}"
+  gem install bundler -v "${BUNDLER_VER}" &>/dev/null
   
-  rm -rf ${VENDOR_BUNDLE}
-  mkdir -p ${VENDOR_BUNDLE}
-  
-  bundle install
+  rm -rf ${VENDOR_BUNDLE} && mkdir -p ${VENDOR_BUNDLE}
+  echo -e "\nGEM BUNDLE\n$hr" && bundle install
   CLEANUP_BUNDLER_CACHE_DONE=true
 }
 

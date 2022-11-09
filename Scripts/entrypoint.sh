@@ -112,19 +112,12 @@ bundle config cache_all true
 
 cleanup_bundler_cache() {
   /maps/Scripts/cleanup_bundler.sh
-  gem install bundler -v "${BUNDLER_VER}"
+  gem install bundler -v "${BUNDLER_VER}" &>/dev/null
   
   rm -rf ${VENDOR_BUNDLE} && mkdir -p ${VENDOR_BUNDLE}
   echo -e "\nGEM BUNDLE\n$hr" && bundle install
   CLEANUP_BUNDLER_CACHE_DONE=true
 }
-
-# Check and execute pre_build_commands commands
-cd ${JEKYLL_SRC}
-
-if [[ ${PRE_BUILD_COMMANDS} ]]; then
-  eval "${PRE_BUILD_COMMANDS}"
-fi
 
 # If the vendor/bundle folder is cached in a differnt OS (e.g. Ubuntu),
 # it would cause `jekyll build` failed, we should clean up the uncompatible
@@ -138,9 +131,16 @@ if [[ "$os_name" != "$(cat $OS_NAME_FILE 2>/dev/null)" ]]; then
   echo -e $os_name > $OS_NAME_FILE
 fi
 
+# Check and execute pre_build_commands commands
+cd ${JEKYLL_SRC}
+
+if [[ ${PRE_BUILD_COMMANDS} ]]; then
+  eval "${PRE_BUILD_COMMANDS}"
+fi
+
 # https://gist.github.com/DrOctogon/bfb6e392aa5654c63d12
 build_jekyll() {
-  echo -e "\nEUN JEKYLL\n"
+  echo -e "\n$hr\nJEKYLL BUILD\n$hr"
   pwd
   JEKYLL_GITHUB_TOKEN=${TOKEN} bundle exec jekyll build --trace --profile \
     ${JEKYLL_BASEURL} -c ${JEKYLL_CFG} -d ${WORKING_DIR}/build

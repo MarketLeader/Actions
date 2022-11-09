@@ -68,6 +68,10 @@ df -h
 echo -e "$hr\nROOT DIR\n$hr"
 cd / && pwd && ls -al
 
+if [[ ${PRE_BUILD_COMMANDS} ]]; then
+  eval "${PRE_BUILD_COMMANDS}"
+fi
+
 echo -e "$hr\nPRIOR INSTALLATION\n$hr"
 chown -R root ${HOME}
 source /maps/bin/activate && dpkg -l
@@ -86,6 +90,9 @@ pip install -r ${REQUIREMENT} --root-user-action=ignore --quiet &>/dev/null
 
 apt-get install -qq ruby ruby-dev ruby-bundler build-essential &>/dev/null
 gem install rails --version "$RAILS_VERSION" --quiet --silent &>/dev/null
+
+# Check and execute pre_build_commands commands
+cd ${JEKYLL_SRC}
 
 # installed packages
 echo -e "\n$hr\nUPON INSTALLATION\n$hr"
@@ -119,13 +126,6 @@ cleanup_bundler_cache() {
   CLEANUP_BUNDLER_CACHE_DONE=true
 }
 
-# Check and execute pre_build_commands commands
-cd ${JEKYLL_SRC}
-
-if [[ ${PRE_BUILD_COMMANDS} ]]; then
-  eval "${PRE_BUILD_COMMANDS}"
-fi
-
 # If the vendor/bundle folder is cached in a differnt OS (e.g. Ubuntu),
 # it would cause `jekyll build` failed, we should clean up the uncompatible
 # cache firstly.
@@ -140,8 +140,7 @@ fi
 
 # https://gist.github.com/DrOctogon/bfb6e392aa5654c63d12
 build_jekyll() {
-  echo -e "\nEUN JEKYLL\n"
-  pwd
+  echo -e "\n$hr\nRUN JEKYLL\n$hr" && pwd
   JEKYLL_GITHUB_TOKEN=${TOKEN} bundle exec jekyll build --trace --profile \
     ${JEKYLL_BASEURL} -c ${JEKYLL_CFG} -d ${WORKING_DIR}/build
 }

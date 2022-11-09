@@ -78,7 +78,7 @@ npm install --prefix /maps &>/dev/null
 apt-get install -qq git &>/dev/null
 git config --global credential.helper store &>/dev/null
 echo "https://{ACTOR}:${TOKEN}@github.com" > ~/.git-credentials
-git clone --recurse-submodules -j8 ${REPOSITORY} /maps/feed/ &>/dev/null
+git clone --recurse-submodules -j8 ${REPOSITORY} /maps/feed/default &>/dev/null
 
 python -m pip install -U --force-reinstall pip &>/dev/null
 apt-get install -qq --no-install-recommends apt-utils &>/dev/null

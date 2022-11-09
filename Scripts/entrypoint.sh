@@ -68,10 +68,6 @@ df -h
 echo -e "$hr\nROOT DIR\n$hr"
 cd / && pwd && ls -al
 
-if [[ ${PRE_BUILD_COMMANDS} ]]; then
-  eval "${PRE_BUILD_COMMANDS}"
-fi
-
 echo -e "$hr\nPRIOR INSTALLATION\n$hr"
 chown -R root ${HOME}
 source /maps/bin/activate && dpkg -l
@@ -90,9 +86,6 @@ pip install -r ${REQUIREMENT} --root-user-action=ignore --quiet &>/dev/null
 
 apt-get install -qq ruby ruby-dev ruby-bundler build-essential &>/dev/null
 gem install rails --version "$RAILS_VERSION" --quiet --silent &>/dev/null
-
-# Check and execute pre_build_commands commands
-cd ${JEKYLL_SRC}
 
 # installed packages
 echo -e "\n$hr\nUPON INSTALLATION\n$hr"
@@ -119,7 +112,7 @@ bundle config cache_all true
 
 cleanup_bundler_cache() {
   /maps/Scripts/cleanup_bundler.sh
-  gem install bundler -v "${BUNDLER_VER}"
+  gem install bundler -v "${BUNDLER_VER}" &>/dev/null
   
   rm -rf ${VENDOR_BUNDLE} && mkdir -p ${VENDOR_BUNDLE}
   echo -e "\nGEM BUNDLE\n$hr" && bundle install
@@ -138,9 +131,17 @@ if [[ "$os_name" != "$(cat $OS_NAME_FILE 2>/dev/null)" ]]; then
   echo -e $os_name > $OS_NAME_FILE
 fi
 
+# Check and execute pre_build_commands commands
+cd ${JEKYLL_SRC}
+
+if [[ ${PRE_BUILD_COMMANDS} ]]; then
+  eval "${PRE_BUILD_COMMANDS}"
+fi
+
 # https://gist.github.com/DrOctogon/bfb6e392aa5654c63d12
 build_jekyll() {
-  echo -e "\n$hr\nRUN JEKYLL\n$hr" && pwd
+  echo -e "\n$hrJEKYLL INSTALLATION\n$hr"
+  pwd
   JEKYLL_GITHUB_TOKEN=${TOKEN} bundle exec jekyll build --trace --profile \
     ${JEKYLL_BASEURL} -c ${JEKYLL_CFG} -d ${WORKING_DIR}/build
 }

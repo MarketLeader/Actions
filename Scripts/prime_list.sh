@@ -9,7 +9,7 @@ from tensorflow.keras import layers
 
 # Make numpy values easier to read.
 np.set_printoptions(precision=3, suppress=True)
-os.chdir("/maps/default/feed/primes/numberGenerator/python/prime_lists")
+os.chdir("/maps/feed/default/primes/numberGenerator/python/prime_lists")
 
 # use glob to get all the csv files in the folder
 # https://www.geeksforgeeks.org/how-to-read-all-csv-files-in-a-folder-in-pandas/

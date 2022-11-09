@@ -1,0 +1,3 @@
+[submodule "feed"]
+	path = feed
+	url = https://github.com/FeedMapping/Orientation

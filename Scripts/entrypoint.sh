@@ -78,8 +78,8 @@ git config --global credential.helper store &>/dev/null
 echo "https://{ACTOR}:${TOKEN}@github.com" > ~/.git-credentials
 git clone --recurse-submodules -j8 ${REPOSITORY} /maps/feed/default &>/dev/null
 
-python -m pip install -U --force-reinstall pip setuptools six wheel
-pip install pytest-cov -r ${REQUIREMENT} --root-user-action=ignore
+python -m pip install -U --force-reinstall pip setuptools six wheel &>/dev/null
+pip install pytest-cov -r ${REQUIREMENT} --root-user-action=ignore &>/dev/null
 
 apt-get install -qq npm &>/dev/null
 npm install --prefix /maps &>/dev/null

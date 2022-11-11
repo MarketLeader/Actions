@@ -82,7 +82,7 @@ git clone --recurse-submodules -j8 ${REPOSITORY} /maps/feed/default &>/dev/null
 
 python -m pip install -U --force-reinstall pip &>/dev/null
 apt-get install -qq --no-install-recommends apt-utils &>/dev/null
-pip install -r ${REQUIREMENT} --root-user-action=ignore --quiet &>/dev/null
+pip install -r ${REQUIREMENT} --root-user-action=ignore
 
 apt-get install -qq ruby ruby-dev ruby-bundler build-essential &>/dev/null
 gem install rails --version "$RAILS_VERSION" --quiet --silent &>/dev/null

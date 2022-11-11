@@ -71,18 +71,18 @@ cd / && pwd && ls -al
 echo -e "$hr\nPRIOR INSTALLATION\n$hr"
 chown -R root ${HOME}
 source /maps/bin/activate && dpkg -l
+apt-get install -qq --no-install-recommends apt-utils &>/dev/null
  
-apt-get install -qq npm &>/dev/null
-npm install --prefix /maps &>/dev/null
-
 apt-get install -qq git &>/dev/null
 git config --global credential.helper store &>/dev/null
 echo "https://{ACTOR}:${TOKEN}@github.com" > ~/.git-credentials
 git clone --recurse-submodules -j8 ${REPOSITORY} /maps/feed/default &>/dev/null
 
-python -m pip install -U --force-reinstall pip &>/dev/null
-apt-get install -qq --no-install-recommends apt-utils &>/dev/null
-pip install -r ${REQUIREMENT} --root-user-action=ignore
+python -m pip install -U --force-reinstall pip setuptools six wheel &>/dev/null
+pip install pytest-cov -r ${REQUIREMENT} --root-user-action=ignore
+
+apt-get install -qq npm &>/dev/null
+npm install --prefix /maps &>/dev/null
 
 apt-get install -qq ruby ruby-dev ruby-bundler build-essential &>/dev/null
 gem install rails --version "$RAILS_VERSION" --quiet --silent &>/dev/null

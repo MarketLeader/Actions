@@ -4,15 +4,15 @@
 # But not these files...
 !.gitignore
 !action.yml
-!Dockerfile
 !__init__.py
-!entrypoint.sh
 
 !Gemfile
+!Dockerfile
 !version.txt
 !package.json
 !Scripts/*.sh
 !deploy.gemspec
+!pyproject.toml
 !requirements.txt
 
 # Nor these directories...

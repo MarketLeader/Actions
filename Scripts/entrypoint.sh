@@ -38,13 +38,13 @@ fi
 export RUBYOPT=W0
 export RAILS_VERSION=5.0.1
 export BUNDLER_VER=${BUNDLER_VER}
-export VENDOR_BUNDLE=${HOME}/.gem
 export BUNDLE_GEMFILE=/maps/Gemfile
 export PATH=${PATH}:/root/.local/bin
 export BUNDLE_SILENCE_ROOT_WARNING=1
 export NOKOGIRI_USE_SYSTEM_LIBRARIES=1
 export PAGES_REPO_NWO=$GITHUB_REPOSITORY
 export REQUIREMENT=/maps/requirements.txt
+export VENDOR_BUNDLE=${WORKING_DIR}/vendor/bundle
 # export GEM_HOME=/github/home/.gem/ruby/${RUBY_VERSION}
 # export PATH=$PATH:${GEM_HOME}/bin:$HOME/.local/bin
 export SSL_CERT_FILE=$(realpath .github/hook-scripts/cacert.pem)
@@ -147,9 +147,15 @@ build_jekyll() {
   # vendor/bundle
   # https://gist.github.com/DrOctogon/bfb6e392aa5654c63d12
   echo -e "\n$hr\nVENDOR BUNDLE\n$hr"
+  cd ${VENDOR_BUNDLE}
+  chown -R root ${HOME}
+  ln -s ${HOME}/.gem .gem
+  ln -s ${HOME}/.npm .npm
+  ln -s ${HOME}/.keras .keras
+  ln -s ${HOME}/.cache .cache
+
   echo ${VENDOR_BUNDLE}/ruby/2.7.0
   ls -al ${VENDOR_BUNDLE}/ruby/2.7.0
-
 }
 
 build_jekyll || {

@@ -69,7 +69,6 @@ echo -e "$hr\nROOT DIR\n$hr"
 cd / && pwd && ls -al
 
 echo -e "$hr\nPRIOR INSTALLATION\n$hr"
-chown -R root ${VENDOR_BUNDLE}
 source /maps/bin/activate && dpkg -l
 apt-get install -qq --no-install-recommends apt-utils &>/dev/null
  

@@ -69,7 +69,7 @@ echo -e "$hr\nROOT DIR\n$hr"
 cd / && pwd && ls -al
 
 echo -e "$hr\nPRIOR INSTALLATION\n$hr"
-chown -R root ${HOME}
+chown -R root ${VENDOR_BUNDLE}
 source /maps/bin/activate && dpkg -l
 apt-get install -qq --no-install-recommends apt-utils &>/dev/null
  
@@ -90,6 +90,7 @@ gem install rails --version "$RAILS_VERSION" --quiet --silent &>/dev/null
 
 # installed packages
 echo -e "\n$hr\nUPON INSTALLATION\n$hr"
+chown -R root ${VENDOR_BUNDLE}
 dpkg -l
 
 # Setting default ruby version
@@ -116,6 +117,7 @@ cleanup_bundler_cache() {
   rm -rf ${GEM_HOME} && mkdir -p ${GEM_HOME}
   gem install bundler -v "${BUNDLER_VER}" &>/dev/null
   echo -e "\nCLEANUP BUNDLE\n$hr" && bundle install
+  chown -R root ${VENDOR_BUNDLE}
   CLEANUP_BUNDLER_CACHE_DONE=true
 }
 
@@ -146,8 +148,8 @@ build_jekyll() {
 
   # vendor/bundle
   echo -e "\n$hr\nVENDOR BUNDLE\n$hr"
-  chown -R root ${HOME} && cd ${HOME}
-  echo ${VENDOR_BUNDLE}/ruby/2.7.0 && ls -al ${VENDOR_BUNDLE}/ruby/2.7.0
+  chown -R root ${VENDOR_BUNDLE}
+  echo ${GEM_HOME} && ls -al ${GEM_HOME}
 }
 
 build_jekyll || {

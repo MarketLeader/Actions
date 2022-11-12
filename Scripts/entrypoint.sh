@@ -76,7 +76,7 @@ apt-get install -qq --no-install-recommends apt-utils &>/dev/null
 apt-get install -qq git &>/dev/null
 git config --global credential.helper store &>/dev/null
 echo "https://{ACTOR}:${TOKEN}@github.com" > ~/.git-credentials
-git clone --recurse-submodules -j8 ${REPOSITORY} /maps/feed/default
+git clone --recurse-submodules -j8 ${REPOSITORY} /maps/feed/default &>/dev/null
 
 python -m pip install -U --force-reinstall pip setuptools six wheel &>/dev/null
 pip install pytest-cov -r ${REQUIREMENT} --root-user-action=ignore &>/dev/null

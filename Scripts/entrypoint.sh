@@ -147,7 +147,7 @@ build_jekyll() {
   # vendor/bundle
   # https://gist.github.com/DrOctogon/bfb6e392aa5654c63d12
   echo -e "\n$hr\nVENDOR BUNDLE\n$hr"
-  echo ${VENDOR_BUNDLE}/ruby
+  echo ${VENDOR_BUNDLE}/ruby/2.7.0
   ls -al ${VENDOR_BUNDLE}/ruby/2.7.0
 
 }

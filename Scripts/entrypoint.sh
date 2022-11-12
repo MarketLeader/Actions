@@ -87,9 +87,6 @@ npm install --prefix /maps --cache ${VENDOR_BUNDLE} &>/dev/null
 
 apt-get install -qq ruby ruby-dev ruby-bundler build-essential &>/dev/null
 gem install rails --version "$RAILS_VERSION" --quiet --silent &>/dev/null
-gem install bundler -v "${BUNDLER_VER}" &>/dev/null
-bundle config path ${VENDOR_BUNDLE}
-bundle config cache_all true
 
 # installed packages
 echo -e "\n$hr\nUPON INSTALLATION\n$hr"
@@ -111,9 +108,13 @@ echo -e "$hr\nEPOCH TEST\n$hr"
 
 # Clean up bundler cache
 CLEANUP_BUNDLER_CACHE_DONE=false
+bundle config path $VENDOR_BUNDLE
+bundle config cache_all true
 
 cleanup_bundler_cache() {
   /maps/Scripts/cleanup_bundler.sh
+  gem install bundler -v "${BUNDLER_VER}" &>/dev/null
+  
   rm -rf ${VENDOR_BUNDLE}/ruby && mkdir -p ${VENDOR_BUNDLE}/ruby
   echo -e "\nGEM BUNDLE\n$hr" && bundle install
   CLEANUP_BUNDLER_CACHE_DONE=true
@@ -147,6 +148,7 @@ build_jekyll() {
   # vendor/bundle
   echo -e "\n$hr\nVENDOR BUNDLE\n$hr"
   chown -R root ${HOME} && cd ${HOME}
+  mv -f .gem .npm .keras .cache ${VENDOR_BUNDLE}/
   echo ${VENDOR_BUNDLE}/ruby/2.7.0 && ls -al ${VENDOR_BUNDLE}/ruby/2.7.0
 }
 

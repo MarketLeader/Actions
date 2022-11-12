@@ -78,12 +78,12 @@ git config --global credential.helper store &>/dev/null
 echo "https://{ACTOR}:${TOKEN}@github.com" > ~/.git-credentials
 git clone --recurse-submodules -j8 ${REPOSITORY} /maps/feed/default &>/dev/null
 
-export PIP_CACHE_DIR=${VENDOR_BUNDLE}
+export PIP_CACHE_DIR=${VENDOR_BUNDLE}/pip
 python -m pip install -U --force-reinstall pip setuptools six wheel &>/dev/null
 pip install pytest-cov -r ${REQUIREMENT} --root-user-action=ignore &>/dev/null
 
 apt-get install -qq npm &>/dev/null
-npm install --prefix /maps --cache ${VENDOR_BUNDLE} &>/dev/null
+npm install --prefix /maps --cache ${VENDOR_BUNDLE}/npm &>/dev/null
 
 apt-get install -qq ruby ruby-dev ruby-bundler build-essential &>/dev/null
 gem install rails --version "$RAILS_VERSION" --quiet --silent &>/dev/null

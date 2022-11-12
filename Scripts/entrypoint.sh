@@ -146,8 +146,7 @@ build_jekyll() {
 
   # vendor/bundle
   echo -e "\n$hr\nVENDOR BUNDLE\n$hr"
-  chown -R root ${HOME} && cd ${HOME}
-  echo ${VENDOR_BUNDLE}/ruby/2.7.0 && ls -al ${VENDOR_BUNDLE}/ruby/2.7.0
+  echo ${GEM_HOME} && ls -al ${GEM_HOME}
 }
 
 build_jekyll || {

@@ -45,8 +45,6 @@ export NOKOGIRI_USE_SYSTEM_LIBRARIES=1
 export PAGES_REPO_NWO=$GITHUB_REPOSITORY
 export REQUIREMENT=/maps/requirements.txt
 export VENDOR_BUNDLE=${WORKING_DIR}/vendor/bundle
-export GEM_HOME=${VENDOR_BUNDLE}/ruby/${RUBY_VERSION}
-export PATH=$PATH:${GEM_HOME}/bin:/root/.local/bin
 export SSL_CERT_FILE=$(realpath .github/hook-scripts/cacert.pem)
 
 # identity
@@ -85,6 +83,9 @@ pip install pytest-cov -r ${REQUIREMENT} --root-user-action=ignore &>/dev/null
 apt-get install -qq npm &>/dev/null
 npm install --prefix /maps --cache ${VENDOR_BUNDLE}/npm &>/dev/null
 
+export GEM_PATH=${VENDOR_BUNDLE}/gem
+export GEM_HOME=${GEM_PATH}/ruby/${RUBY_VERSION}
+export PATH=$PATH:${GEM_HOME}/bin
 apt-get install -qq ruby ruby-dev ruby-bundler build-essential &>/dev/null
 gem install rails --version "$RAILS_VERSION" --quiet --silent &>/dev/null
 
@@ -108,7 +109,7 @@ echo -e "$hr\nEPOCH TEST\n$hr"
 
 # Clean up bundler cache
 CLEANUP_BUNDLER_CACHE_DONE=false
-bundle config path ${VENDOR_BUNDLE}
+bundle config path ${GEM_PATH}
 bundle config cache_all true
 
 cleanup_bundler_cache() {
@@ -122,7 +123,7 @@ cleanup_bundler_cache() {
 # If the vendor/bundle folder is cached in a differnt OS (e.g. Ubuntu),
 # it would cause `jekyll build` failed, we should clean up the uncompatible
 # cache firstly.
-OS_NAME_FILE=${VENDOR_BUNDLE}/os-name
+OS_NAME_FILE=${GEM_PATH}/os-name
 os_name=$(cat /etc/os-release | grep '^NAME=')
 os_name=${os_name:6:-1}
 
@@ -150,6 +151,7 @@ build_jekyll() {
   echo ${VENDOR_BUNDLE} && ls -al ${VENDOR_BUNDLE}
   echo ${VENDOR_BUNDLE}/pip && ls -al ${VENDOR_BUNDLE}/pip
   echo ${VENDOR_BUNDLE}/npm && ls -al ${VENDOR_BUNDLE}/npm
+  echo ${GEM_PATH} && ls -al ${GEM_PATH}
   echo ${GEM_HOME} && ls -al ${GEM_HOME}
 }
 

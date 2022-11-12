@@ -36,17 +36,17 @@ fi
 
 # Initialize environment
 export RUBYOPT=W0
+export RUBY_VERSION=2.7.0
 export RAILS_VERSION=5.0.1
 export BUNDLER_VER=${BUNDLER_VER}
 export BUNDLE_GEMFILE=/maps/Gemfile
-export PATH=${PATH}:/root/.local/bin
 export BUNDLE_SILENCE_ROOT_WARNING=1
 export NOKOGIRI_USE_SYSTEM_LIBRARIES=1
 export PAGES_REPO_NWO=$GITHUB_REPOSITORY
 export REQUIREMENT=/maps/requirements.txt
 export VENDOR_BUNDLE=${WORKING_DIR}/vendor/bundle
-# export GEM_HOME=/github/home/.gem/ruby/${RUBY_VERSION}
-# export PATH=$PATH:${GEM_HOME}/bin:$HOME/.local/bin
+export GEM_HOME=${VENDOR_BUNDLE}/.gem/ruby/${RUBY_VERSION}
+export PATH=$PATH:${GEM_HOME}/bin:/root/.local/bin
 export SSL_CERT_FILE=$(realpath .github/hook-scripts/cacert.pem)
 
 # identity
@@ -114,7 +114,7 @@ CLEANUP_BUNDLER_CACHE_DONE=false
 
 cleanup_bundler_cache() {
   /maps/Scripts/cleanup_bundler.sh
-  rm -rf ${VENDOR_BUNDLE} && mkdir -p ${VENDOR_BUNDLE}
+  rm -rf ${VENDOR_BUNDLE}/ruby && mkdir -p ${VENDOR_BUNDLE}/ruby
   echo -e "\nGEM BUNDLE\n$hr" && bundle install
   CLEANUP_BUNDLER_CACHE_DONE=true
 }
@@ -147,7 +147,6 @@ build_jekyll() {
   # vendor/bundle
   echo -e "\n$hr\nVENDOR BUNDLE\n$hr"
   chown -R root ${HOME} && cd ${HOME}
-  mv -f .gem .npm .keras .cache ${VENDOR_BUNDLE}/
   echo ${VENDOR_BUNDLE}/ruby/2.7.0 && ls -al ${VENDOR_BUNDLE}/ruby/2.7.0
 }
 

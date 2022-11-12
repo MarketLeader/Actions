@@ -7,7 +7,7 @@ touch .nojekyll
 [ -n "$INPUT_CNAME" ] && echo "$INPUT_CNAME" > CNAME
 
 echo -e "$hr\nDEPLOYMENT\n$hr"
-echo -e "\nDeploying to ${GITHUB_REPOSITORY} on branch ${BRANCH}"
+echo -e "Deploying to ${GITHUB_REPOSITORY} on branch ${BRANCH}"
 echo -e "Deploying to https://github.com/${GITHUB_REPOSITORY}.git\n"
 
 REMOTE_REPO="https://${ACTOR}:${TOKEN}@github.com/${GITHUB_REPOSITORY}.git" && \

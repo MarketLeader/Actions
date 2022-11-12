@@ -33,11 +33,6 @@ git config --global --unset http.https://github.com/.extraheader
 git config --system --unset http.https://github.com/.extraheader
 cat .git/config
 
-# vendor/bundle
-echo -e "\n$hr\nVENDOR BUNDLE\n$hr"
-echo ${VENDOR_BUNDLE}/ruby
-ls -al ${VENDOR_BUNDLE}/ruby/ruby/2.7.0
-
 # environtment
 echo -e "\n$hr\nENVIRONTMENT\n$hr"
 printenv | sort

@@ -44,9 +44,9 @@ export BUNDLE_SILENCE_ROOT_WARNING=1
 export NOKOGIRI_USE_SYSTEM_LIBRARIES=1
 export PAGES_REPO_NWO=$GITHUB_REPOSITORY
 export REQUIREMENT=/maps/requirements.txt
-export VENDOR_BUNDLE=${WORKING_DIR}/vendor
-#export GEM_HOME=${VENDOR_BUNDLE}/gem/ruby/${RUBY_VERSION}
-#export PATH=$PATH:${GEM_HOME}/bin:/root/.local/bin
+export VENDOR_BUNDLE=${WORKING_DIR}/vendor/bundle
+export GEM_HOME=${VENDOR_BUNDLE}/ruby/${RUBY_VERSION}
+export PATH=$PATH:${GEM_HOME}/bin:/root/.local/bin
 export SSL_CERT_FILE=$(realpath .github/hook-scripts/cacert.pem)
 
 # identity
@@ -69,6 +69,7 @@ echo -e "$hr\nROOT DIR\n$hr"
 cd / && pwd && ls -al
 
 echo -e "$hr\nPRIOR INSTALLATION\n$hr"
+chown -R root ${HOME}
 source /maps/bin/activate && dpkg -l
 apt-get install -qq --no-install-recommends apt-utils &>/dev/null
  
@@ -77,19 +78,18 @@ git config --global credential.helper store &>/dev/null
 echo "https://{ACTOR}:${TOKEN}@github.com" > ~/.git-credentials
 git clone --recurse-submodules -j8 ${REPOSITORY} /maps/feed/default &>/dev/null
 
-export PIP_CACHE_DIR=${VENDOR_BUNDLE}/pip
+export PIP_CACHE_DIR=${VENDOR_BUNDLE}
 python -m pip install -U --force-reinstall pip setuptools six wheel &>/dev/null
 pip install pytest-cov -r ${REQUIREMENT} --root-user-action=ignore &>/dev/null
 
 apt-get install -qq npm &>/dev/null
-npm install --prefix /maps --cache ${VENDOR_BUNDLE}/npm &>/dev/null
+npm install --prefix /maps --cache ${VENDOR_BUNDLE} &>/dev/null
 
 apt-get install -qq ruby ruby-dev ruby-bundler build-essential &>/dev/null
 gem install rails --version "$RAILS_VERSION" --quiet --silent &>/dev/null
 
 # installed packages
 echo -e "\n$hr\nUPON INSTALLATION\n$hr"
-chown -R root ${VENDOR_BUNDLE}
 dpkg -l
 
 # Setting default ruby version
@@ -108,15 +108,14 @@ echo -e "$hr\nEPOCH TEST\n$hr"
 
 # Clean up bundler cache
 CLEANUP_BUNDLER_CACHE_DONE=false
-bundle config path ${VENDOR_BUNDLE}/gem
+bundle config path ${VENDOR_BUNDLE}
 bundle config cache_all true
 
 cleanup_bundler_cache() {
   /maps/Scripts/cleanup_bundler.sh
-  rm -rf ${VENDOR_BUNDLE}/gem/ruby && mkdir -p ${VENDOR_BUNDLE}/gem/ruby
+  rm -rf ${GEM_HOME} && mkdir -p ${GEM_HOME}
   gem install bundler -v "${BUNDLER_VER}" &>/dev/null
   echo -e "\nCLEANUP BUNDLE\n$hr" && bundle install
-  chown -R root ${VENDOR_BUNDLE}
   CLEANUP_BUNDLER_CACHE_DONE=true
 }
 
@@ -147,8 +146,8 @@ build_jekyll() {
 
   # vendor/bundle
   echo -e "\n$hr\nVENDOR BUNDLE\n$hr"
-  chown -R root ${VENDOR_BUNDLE}
-  echo ${GEM_HOME} && ls -al ${GEM_HOME}
+  chown -R root ${HOME} && cd ${HOME}
+  echo ${VENDOR_BUNDLE}/ruby/2.7.0 && ls -al ${VENDOR_BUNDLE}/ruby/2.7.0
 }
 
 build_jekyll || {

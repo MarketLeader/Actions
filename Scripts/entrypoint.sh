@@ -139,23 +139,16 @@ if [[ ${PRE_BUILD_COMMANDS} ]]; then
 fi
 
 build_jekyll() {
-  echo -e "\n$hr\nJEKYLL BUILD\n$hr"
-  pwd
+  echo -e "\n$hr\nJEKYLL BUILD\n$hr" && pwd
+  # https://gist.github.com/DrOctogon/bfb6e392aa5654c63d12
   JEKYLL_GITHUB_TOKEN=${TOKEN} bundle exec jekyll build --trace --profile \
     ${JEKYLL_BASEURL} -c ${JEKYLL_CFG} -d ${WORKING_DIR}/build
 
   # vendor/bundle
-  # https://gist.github.com/DrOctogon/bfb6e392aa5654c63d12
   echo -e "\n$hr\nVENDOR BUNDLE\n$hr"
-  cd ${VENDOR_BUNDLE}
-  chown -R root ${HOME}
-  ln -s ${HOME}/.gem gem
-  ln -s ${HOME}/.npm npm
-  ln -s ${HOME}/.keras keras
-  ln -s ${HOME}/.cache/pip pip
-
-  echo ${VENDOR_BUNDLE}/ruby/2.7.0
-  ls -al ${VENDOR_BUNDLE}/ruby/2.7.0
+  chown -R root ${HOME} && cd ${HOME}
+  mv -f .gem .npm .keras .cache/pip ${VENDOR_BUNDLE}/
+  echo ${VENDOR_BUNDLE}/ruby/2.7.0 && ls -al ${VENDOR_BUNDLE}/ruby/2.7.0
 }
 
 build_jekyll || {

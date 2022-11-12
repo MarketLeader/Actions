@@ -116,7 +116,7 @@ cleanup_bundler_cache() {
   gem install bundler -v "${BUNDLER_VER}" &>/dev/null
   
   rm -rf ${VENDOR_BUNDLE}/ruby && mkdir -p ${VENDOR_BUNDLE}/ruby
-  echo -e "\nGEM BUNDLE\n$hr" && bundle install
+  echo -e "\nCLEANUP BUNDLE\n$hr" && bundle install
   CLEANUP_BUNDLER_CACHE_DONE=true
 }
 

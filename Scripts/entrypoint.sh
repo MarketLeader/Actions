@@ -147,7 +147,7 @@ build_jekyll() {
   # vendor/bundle
   echo -e "\n$hr\nVENDOR BUNDLE\n$hr"
   chown -R root ${HOME} && cd ${HOME}
-  mv -f .gem .npm .keras .cache/pip ${VENDOR_BUNDLE}/
+  mv -f .gem .npm .keras .cache ${VENDOR_BUNDLE}/
   echo ${VENDOR_BUNDLE}/ruby/2.7.0 && ls -al ${VENDOR_BUNDLE}/ruby/2.7.0
 }
 

@@ -78,14 +78,18 @@ git config --global credential.helper store &>/dev/null
 echo "https://{ACTOR}:${TOKEN}@github.com" > ~/.git-credentials
 git clone --recurse-submodules -j8 ${REPOSITORY} /maps/feed/default &>/dev/null
 
+export PIP_CACHE_DIR=${VENDOR_BUNDLE}
 python -m pip install -U --force-reinstall pip setuptools six wheel &>/dev/null
 pip install pytest-cov -r ${REQUIREMENT} --root-user-action=ignore &>/dev/null
 
 apt-get install -qq npm &>/dev/null
-npm install --prefix /maps &>/dev/null
+npm install --prefix /maps --cache ${VENDOR_BUNDLE} &>/dev/null
 
 apt-get install -qq ruby ruby-dev ruby-bundler build-essential &>/dev/null
 gem install rails --version "$RAILS_VERSION" --quiet --silent &>/dev/null
+gem install bundler -v "${BUNDLER_VER}" &>/dev/null
+bundle config path ${VENDOR_BUNDLE}
+bundle config cache_all true
 
 # installed packages
 echo -e "\n$hr\nUPON INSTALLATION\n$hr"
@@ -107,13 +111,9 @@ echo -e "$hr\nEPOCH TEST\n$hr"
 
 # Clean up bundler cache
 CLEANUP_BUNDLER_CACHE_DONE=false
-bundle config path $VENDOR_BUNDLE
-bundle config cache_all true
 
 cleanup_bundler_cache() {
   /maps/Scripts/cleanup_bundler.sh
-  gem install bundler -v "${BUNDLER_VER}" &>/dev/null
-  
   rm -rf ${VENDOR_BUNDLE} && mkdir -p ${VENDOR_BUNDLE}
   echo -e "\nGEM BUNDLE\n$hr" && bundle install
   CLEANUP_BUNDLER_CACHE_DONE=true

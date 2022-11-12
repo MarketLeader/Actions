@@ -44,8 +44,8 @@ export BUNDLE_SILENCE_ROOT_WARNING=1
 export NOKOGIRI_USE_SYSTEM_LIBRARIES=1
 export PAGES_REPO_NWO=$GITHUB_REPOSITORY
 export REQUIREMENT=/maps/requirements.txt
-export VENDOR_BUNDLE=${WORKING_DIR}/vendor/bundle
-export GEM_HOME=${VENDOR_BUNDLE}/ruby/${RUBY_VERSION}
+export VENDOR_BUNDLE=${WORKING_DIR}/vendor
+export GEM_HOME=${VENDOR_BUNDLE}/gem/ruby/${RUBY_VERSION}
 export PATH=$PATH:${GEM_HOME}/bin:/root/.local/bin
 export SSL_CERT_FILE=$(realpath .github/hook-scripts/cacert.pem)
 
@@ -78,12 +78,12 @@ git config --global credential.helper store &>/dev/null
 echo "https://{ACTOR}:${TOKEN}@github.com" > ~/.git-credentials
 git clone --recurse-submodules -j8 ${REPOSITORY} /maps/feed/default &>/dev/null
 
-export PIP_CACHE_DIR=${VENDOR_BUNDLE}
+export PIP_CACHE_DIR=${VENDOR_BUNDLE}/pip
 python -m pip install -U --force-reinstall pip setuptools six wheel &>/dev/null
 pip install pytest-cov -r ${REQUIREMENT} --root-user-action=ignore &>/dev/null
 
 apt-get install -qq npm &>/dev/null
-npm install --prefix /maps --cache ${VENDOR_BUNDLE} &>/dev/null
+npm install --prefix /maps --cache ${VENDOR_BUNDLE}/npm &>/dev/null
 
 apt-get install -qq ruby ruby-dev ruby-bundler build-essential &>/dev/null
 gem install rails --version "$RAILS_VERSION" --quiet --silent &>/dev/null
@@ -109,7 +109,7 @@ echo -e "$hr\nEPOCH TEST\n$hr"
 
 # Clean up bundler cache
 CLEANUP_BUNDLER_CACHE_DONE=false
-bundle config path ${VENDOR_BUNDLE}
+bundle config path ${VENDOR_BUNDLE}/gem
 bundle config cache_all true
 
 cleanup_bundler_cache() {

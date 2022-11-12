@@ -35,8 +35,8 @@ cat .git/config
 
 # vendor/bundle
 echo -e "\n$hr\nVENDOR BUNDLE\n$hr"
-echo ${WORKING_DIR}/vendor/bundle/ruby
-ls -al /github/workspace/vendor/bundle/ruby/2.7.0
+echo ${VENDOR_BUNDLE}/ruby
+ls -al ${VENDOR_BUNDLE}/ruby/ruby/2.7.0
 
 # environtment
 echo -e "\n$hr\nENVIRONTMENT\n$hr"

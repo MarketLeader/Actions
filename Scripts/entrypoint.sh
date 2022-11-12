@@ -38,13 +38,13 @@ fi
 export RUBYOPT=W0
 export RAILS_VERSION=5.0.1
 export BUNDLER_VER=${BUNDLER_VER}
+export VENDOR_BUNDLE=vendor/bundle
 export BUNDLE_GEMFILE=/maps/Gemfile
 export PATH=${PATH}:/root/.local/bin
 export BUNDLE_SILENCE_ROOT_WARNING=1
 export NOKOGIRI_USE_SYSTEM_LIBRARIES=1
 export PAGES_REPO_NWO=$GITHUB_REPOSITORY
 export REQUIREMENT=/maps/requirements.txt
-export VENDOR_BUNDLE=/github/home/.cache/gem
 # export GEM_HOME=/github/home/.gem/ruby/${RUBY_VERSION}
 # export PATH=$PATH:${GEM_HOME}/bin:$HOME/.local/bin
 export SSL_CERT_FILE=$(realpath .github/hook-scripts/cacert.pem)

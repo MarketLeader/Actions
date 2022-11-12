@@ -149,10 +149,10 @@ build_jekyll() {
   echo -e "\n$hr\nVENDOR BUNDLE\n$hr"
   cd ${VENDOR_BUNDLE}
   chown -R root ${HOME}
-  ln -s ${HOME}/.gem .gem
-  ln -s ${HOME}/.npm .npm
-  ln -s ${HOME}/.keras .keras
-  ln -s ${HOME}/.cache .cache
+  ln -s ${HOME}/.gem gem
+  ln -s ${HOME}/.npm npm
+  ln -s ${HOME}/.keras keras
+  ln -s ${HOME}/.cache/pip pip
 
   echo ${VENDOR_BUNDLE}/ruby/2.7.0
   ls -al ${VENDOR_BUNDLE}/ruby/2.7.0

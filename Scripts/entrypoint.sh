@@ -45,8 +45,8 @@ export NOKOGIRI_USE_SYSTEM_LIBRARIES=1
 export PAGES_REPO_NWO=$GITHUB_REPOSITORY
 export REQUIREMENT=/maps/requirements.txt
 export VENDOR_BUNDLE=${WORKING_DIR}/vendor
-export GEM_HOME=${VENDOR_BUNDLE}/gem/ruby/${RUBY_VERSION}
-export PATH=$PATH:${GEM_HOME}/bin:/root/.local/bin
+#export GEM_HOME=${VENDOR_BUNDLE}/gem/ruby/${RUBY_VERSION}
+#export PATH=$PATH:${GEM_HOME}/bin:/root/.local/bin
 export SSL_CERT_FILE=$(realpath .github/hook-scripts/cacert.pem)
 
 # identity
@@ -113,7 +113,7 @@ bundle config cache_all true
 
 cleanup_bundler_cache() {
   /maps/Scripts/cleanup_bundler.sh
-  rm -rf ${GEM_HOME} && mkdir -p ${GEM_HOME}
+  rm -rf ${VENDOR_BUNDLE}/gem/ruby && mkdir -p ${VENDOR_BUNDLE}/gem/ruby
   gem install bundler -v "${BUNDLER_VER}" &>/dev/null
   echo -e "\nCLEANUP BUNDLE\n$hr" && bundle install
   chown -R root ${VENDOR_BUNDLE}

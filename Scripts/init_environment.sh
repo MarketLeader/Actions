@@ -18,7 +18,7 @@ mkdir /root/.ssh
 # home
 echo -e "\n$hr\nHOME DIR\n$hr"
 echo ${HOME}
-ls -al /home && ls -al /github && ls -al /github/home
+ls -al ${HOME}
 
 # git/config
 cd ${WORKING_DIR}

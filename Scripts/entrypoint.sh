@@ -83,9 +83,11 @@ pip install pytest-cov -r ${REQUIREMENT} --root-user-action=ignore &>/dev/null
 apt-get install -qq npm &>/dev/null
 npm install --prefix /maps --cache ${VENDOR_BUNDLE}/npm &>/dev/null
 
+# https://stackoverflow.com/a/30369485/4058484
 export GEM_PATH=${VENDOR_BUNDLE}/gem
 export GEM_HOME=${GEM_PATH}/ruby/${RUBY_VERSION}
 export PATH=$PATH:${GEM_HOME}/bin
+
 apt-get install -qq ruby ruby-dev ruby-bundler build-essential &>/dev/null
 gem install rails --version "$RAILS_VERSION" --quiet --silent &>/dev/null
 
@@ -121,8 +123,7 @@ cleanup_bundler_cache() {
 }
 
 # If the vendor/bundle folder is cached in a differnt OS (e.g. Ubuntu),
-# it would cause `jekyll build` failed, we should clean up the uncompatible
-# cache firstly.
+# it would cause `jekyll build` failed, we should clean up the cache firstly.
 OS_NAME_FILE=${GEM_PATH}/os-name
 os_name=$(cat /etc/os-release | grep '^NAME=')
 os_name=${os_name:6:-1}

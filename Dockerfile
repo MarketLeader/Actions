@@ -8,7 +8,7 @@ ENV DEBCONF_NOWARNINGS="yes"
 ARG DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update &>/dev/null
-RUN apt-get install --no-install-recommends apt-utils &>/dev/null
+RUN apt-get install -y --no-install-recommends apt-utils &>/dev/null
 
 ADD . /maps
 ENTRYPOINT ["/maps/Scripts/entrypoint.sh"]

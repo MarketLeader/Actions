@@ -19,7 +19,7 @@ RUN apt-get install -y --no-install-recommends \
 RUN python3.8 -m venv /maps
 ADD . /maps
 
-ENV PATH="${PATH}:/maps/bin"
+ENV PATH="/maps/bin:${PATH}"
 RUN source /maps/bin/activate
 
 ENTRYPOINT ["/maps/Scripts/entrypoint.sh"]

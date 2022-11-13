@@ -83,7 +83,7 @@ export PIP_CACHE_DIR=${VENDOR_BUNDLE}/pip
 # https://pypi.org/project/pipx/
 python -m pip install --upgrade pip setuptools six wheel
 python -m pip install --user pipx && python -m pipx ensurepath
-pipx install pytest-cov -r /maps/requirements.txt
+python -m pip install --user pytest-cov -r /maps/requirements.txt
 
 export GEM_PATH=${VENDOR_BUNDLE}/gem
 export GEM_HOME=${GEM_PATH}/ruby/${RUBY_VERSION}

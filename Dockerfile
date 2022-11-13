@@ -18,7 +18,7 @@ ENV PATH="/opt/venv/bin:$PATH"
 
 COPY requirements.txt .
 RUN python -m pip install --upgrade pip setuptools six wheel &>/dev/null
-RUN pip install pytest-cov -r requirements.txt
+RUN python -m pip install pytest-cov -r requirements.txt &>/dev/null
 
 # final stage
 FROM tensorflow/tensorflow:latest-gpu

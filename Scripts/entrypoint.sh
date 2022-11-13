@@ -65,6 +65,10 @@ df -h
 echo -e "$hr\nROOT DIR\n$hr"
 cd / && pwd && ls -al
 
+# pckages
+echo -e "$hr\nMAPS DIR\n$hr"
+cd /maps && pwd && ls -al
+
 echo -e "$hr\nPRIOR INSTALLATION\n$hr"
 chown -R root ${HOME} && dpkg -l 
 

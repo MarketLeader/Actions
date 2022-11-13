@@ -1,5 +1,5 @@
 # temp stage
-FROM python:3.8-slim as builder &>/dev/null
+FROM python:3.8-slim as builder
 
 WORKDIR /app
 LABEL version=v1.0.9
@@ -21,7 +21,7 @@ RUN python -m pip install --upgrade pip setuptools six wheel &>/dev/null
 RUN pip install pytest-cov -r requirements.txt
 
 # final stage
-FROM tensorflow/tensorflow:latest-gpu &>/dev/null
+FROM tensorflow/tensorflow:latest-gpu
 
 ENV NVIDIA_VISIBLE_DEVICES all
 ENV NVIDIA_DRIVER_CAPABILITIES compute,utility

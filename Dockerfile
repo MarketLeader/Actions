@@ -29,10 +29,9 @@ ARG DEBIAN_FRONTEND=noninteractive
 RUN apt-get update &>/dev/null
 RUN apt-get install -qq --no-install-recommends apt-utils &>/dev/null
 
-COPY --from=builder /opt/venv /maps
-
 ADD . /maps
 ENV PATH="/maps/bin:$PATH"
+COPY --from=builder /opt/venv /maps
 
 RUN source /maps/bin/activate
-RENTRYPOINT ["/maps/Scripts/entrypoint.sh"]
+ENTRYPOINT ["/maps/Scripts/entrypoint.sh"]

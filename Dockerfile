@@ -13,8 +13,8 @@ RUN apt-get install -y --no-install-recommends gcc &>/dev/null
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 
-RUN python -m venv /opt/venv
-ENV PATH="/opt/venv/bin:$PATH"
+RUN python -m venv /maps
+ENV PATH="/maps/bin:$PATH"
 
 COPY requirements.txt .
 RUN python -m pip install --upgrade pip setuptools six wheel &>/dev/null
@@ -33,7 +33,9 @@ RUN apt-get update &>/dev/null
 RUN apt-get install -y --no-install-recommends apt-utils &>/dev/null
 
 ADD . /maps
-COPY --from=builder /opt/venv /maps
+COPY --from=builder /maps /maps
 
 ENV PATH="/maps/bin:$PATH"
+RUN source /maps/bin/activate
+
 ENTRYPOINT ["/maps/Scripts/entrypoint.sh"]

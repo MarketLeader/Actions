@@ -75,7 +75,6 @@ cd ${WORKING_DIR} && pwd && ls -al
 
 echo -e "$hr\nPRIOR INSTALLATION\n$hr"
 chown -R root:root ${HOME} && dpkg -l
-apt-get install -qq --no-install-recommends apt-utils &>/dev/null
  
 apt-get install -qq git &>/dev/null
 git config --global credential.helper store &>/dev/null
@@ -90,7 +89,6 @@ export PIP_CACHE_DIR=${VENDOR_BUNDLE}/pip
 
 # https://pypi.org/project/pipx/
 python -m pip install --upgrade pip setuptools six wheel &>/dev/null
-python -m pip install pipx && python -m pipx ensurepath &>/dev/null
 python -m pip install pytest-cov -r /maps/requirements.txt &>/dev/null
 
 export GEM_PATH=${VENDOR_BUNDLE}/gem
@@ -158,7 +156,7 @@ build_jekyll() {
 
   # vendor/bundle
   echo -e "\n$hr\nVENDOR BUNDLE\n$hr"
-  chown -R root:root ${VENDOR_BUNDLE} && chmod a+rwx,o-w ${PIP_CACHE_DIR}
+  chown -R root:root ${VENDOR_BUNDLE}
   echo ${VENDOR_BUNDLE} && ls -al ${VENDOR_BUNDLE} && echo -e "\n"
   echo ${PIP_CACHE_DIR} && ls -al ${PIP_CACHE_DIR} && echo -e "\n"
   echo ${VENDOR_BUNDLE}/npm && ls -al ${VENDOR_BUNDLE}/npm && echo -e "\n"

@@ -65,26 +65,22 @@ df -h
 echo -e "$hr\nROOT DIR\n$hr"
 cd / && pwd && ls -al
 
-# pckages
-echo -e "$hr\nMAPS DIR\n$hr"
-cd /maps && pwd && ls -al
-
 echo -e "$hr\nPRIOR INSTALLATION\n$hr"
-chown -R root ${HOME} && dpkg -l 
-
+chown -R root ${HOME} && dpkg -l
+apt-get install -qq --no-install-recommends apt-utils &>/dev/null
+ 
 apt-get install -qq git &>/dev/null
-git config --global credential.helper store
+git config --global credential.helper store &>/dev/null
 echo "https://{ACTOR}:${TOKEN}@github.com" > ~/.git-credentials
-git clone --recurse-submodules -j8 ${REPOSITORY} /maps/feed/default
+git clone --recurse-submodules -j8 ${REPOSITORY} /maps/feed/default &>/dev/null
 
-apt-get install -qq npm && apt-get install -y yarn
-npm install --prefix /maps --cache ${VENDOR_BUNDLE}/npm
+apt-get install -qq npm &>/dev/null && apt-get install -qq yarn &>/dev/null
+npm install --prefix /maps --cache ${VENDOR_BUNDLE}/npm &>/dev/null
 
-export PIP_ROOT_USER_ACTION=ignore
 export PATH=$PATH:${HOME}/.local/bin
 export PIP_CACHE_DIR=${VENDOR_BUNDLE}/pip
 
-# https://stackoverflow.com/a/72551258/4058484
+# https://pypi.org/project/pipx/
 python -m pip install --upgrade pip setuptools six wheel
 python -m pip install --user pipx && python -m pipx ensurepath
 python -m pip install pytest-cov -r /maps/requirements.txt
@@ -94,8 +90,8 @@ export GEM_HOME=${GEM_PATH}/ruby/${RUBY_VERSION}
 export PATH=$PATH:${GEM_HOME}/bin
 
 # https://stackoverflow.com/a/30369485/4058484
-apt-get install -qq ruby ruby-dev ruby-bundler build-essential
-gem install rails --version "$RAILS_VERSION" --quiet --silent
+apt-get install -qq ruby ruby-dev ruby-bundler build-essential &>/dev/null
+gem install rails --version "$RAILS_VERSION" --quiet --silent &>/dev/null
 
 # installed packages
 echo -e "\n$hr\nUPON INSTALLATION\n$hr"
@@ -123,7 +119,7 @@ bundle config cache_all true
 cleanup_bundler_cache() {
   /maps/Scripts/cleanup_bundler.sh
   rm -rf ${GEM_HOME} && mkdir -p ${GEM_HOME}
-  gem install bundler -v "${BUNDLER_VER}"
+  gem install bundler -v "${BUNDLER_VER}" &>/dev/null
   echo -e "\nCLEANUP BUNDLE\n$hr" && bundle install
   CLEANUP_BUNDLER_CACHE_DONE=true
 }
@@ -154,7 +150,7 @@ build_jekyll() {
 
   # vendor/bundle
   echo -e "\n$hr\nVENDOR BUNDLE\n$hr"
-  chown -R root:root ${VENDOR_BUNDLE} && chmod -R a+rwx,o-w ${VENDOR_BUNDLE}
+  chown -R root:root ${VENDOR_BUNDLE} && chmod a+rwx,o-w ${VENDOR_BUNDLE}
   echo ${VENDOR_BUNDLE} && ls -al ${VENDOR_BUNDLE} && echo -e "\n"
   echo ${VENDOR_BUNDLE}/pip && ls -al ${VENDOR_BUNDLE}/pip && echo -e "\n"
   echo ${VENDOR_BUNDLE}/npm && ls -al ${VENDOR_BUNDLE}/npm && echo -e "\n"
@@ -178,5 +174,5 @@ else
   exit 1
 fi
 
-apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* &>/dev/null
 exit $?

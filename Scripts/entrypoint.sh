@@ -66,8 +66,7 @@ echo -e "$hr\nROOT DIR\n$hr"
 cd / && pwd && ls -al
 
 echo -e "$hr\nPRIOR INSTALLATION\n$hr"
-chown -R root ${HOME}
-source /maps/bin/activate && dpkg -l
+chown -R root ${HOME} && dpkg -l
 apt-get install -qq --no-install-recommends apt-utils &>/dev/null
  
 apt-get install -qq git &>/dev/null
@@ -75,9 +74,9 @@ git config --global credential.helper store &>/dev/null
 echo "https://{ACTOR}:${TOKEN}@github.com" > ~/.git-credentials
 git clone --recurse-submodules -j8 ${REPOSITORY} /maps/feed/default &>/dev/null
 
-export PIP_CACHE_DIR=${VENDOR_BUNDLE}/pip
-python -m pip install --upgrade pip setuptools six wheel &>/dev/null
-python -m pip install pytest-cov -r /maps/requirements.txt &>/dev/null
+export PIP_CACHE_DIR=${VENDOR_BUNDLE}/pipx
+pipx install --upgrade pip setuptools six wheel &>/dev/null
+pipx install pytest-cov -r /maps/requirements.txt &>/dev/null
 
 apt-get install -qq npm &>/dev/null
 npm install --prefix /maps --cache ${VENDOR_BUNDLE}/npm &>/dev/null

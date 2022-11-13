@@ -74,14 +74,16 @@ git config --global credential.helper store &>/dev/null
 echo "https://{ACTOR}:${TOKEN}@github.com" > ~/.git-credentials
 git clone --recurse-submodules -j8 ${REPOSITORY} /maps/feed/default &>/dev/null
 
-export PIP_CACHE_DIR=${VENDOR_BUNDLE}/pip
-export PATH=$PATH:${HOME}/.local/bin
-python -m pip install --user --upgrade pip setuptools six wheel
-python -m pip install --user pipx && python -m pipx ensurepath
-python -m pip install --user pytest-cov -r /maps/requirements.txt
-
-apt-get install -qq npm &>/dev/null
+apt-get install -qq npm &>/dev/null && apt-get install -qq yarn &>/dev/null
 npm install --prefix /maps --cache ${VENDOR_BUNDLE}/npm &>/dev/null
+
+# https://pypi.org/project/pipx/
+export PATH=$PATH:${HOME}/.local/bin
+export PIP_CACHE_DIR=${VENDOR_BUNDLE}/pip
+
+python -m pip install --upgrade pip
+python -m pip install --user pipx && python -m pipx ensurepath
+pipx install setuptools six wheel pytest-cov -r /maps/requirements.txt
 
 # https://stackoverflow.com/a/30369485/4058484
 export GEM_PATH=${VENDOR_BUNDLE}/gem

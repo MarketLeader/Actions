@@ -13,5 +13,5 @@ RUN python3.8 -m venv /maps
 
 ADD . /maps
 RUN source /maps/bin/activate
-ENV PATH="${PATH}:${HOME}/.local/bin"
-ENTRYPOINT ["/maps/Scripts/entrypoint.sh"]
+ENV PATH="${PATH}:/maps/Scripts/"
+ENTRYPOINT ["entrypoint.sh"]

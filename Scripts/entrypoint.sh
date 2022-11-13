@@ -61,12 +61,20 @@ uname -r
 echo -e "\n$hr\nFILE SYSTEM\n$hr"
 df -h
 
-# pckages
+# rootdir
 echo -e "$hr\nROOT DIR\n$hr"
 cd / && pwd && ls -al
 
+# pckages
+echo -e "$hr\nVENV DIR\n$hr"
+cd /maps && pwd && ls -al
+
+# current
+echo -e "$hr\nWORK DIR\n$hr"
+cd ${WORKING_DIR} && pwd && ls -al
+
 echo -e "$hr\nPRIOR INSTALLATION\n$hr"
-chown -R root ${HOME} && dpkg -l
+chown -R root:root ${HOME} && dpkg -l
 apt-get install -qq --no-install-recommends apt-utils &>/dev/null
  
 apt-get install -qq git &>/dev/null
@@ -77,13 +85,13 @@ git clone --recurse-submodules -j8 ${REPOSITORY} /maps/feed/default &>/dev/null
 apt-get install -qq npm &>/dev/null && apt-get install -qq yarn &>/dev/null
 npm install --prefix /maps --cache ${VENDOR_BUNDLE}/npm &>/dev/null
 
-export PATH=$PATH:${HOME}/.local/bin
+export PATH=${HOME}/.local/bin:$PATH
 export PIP_CACHE_DIR=${VENDOR_BUNDLE}/pip
 
 # https://pypi.org/project/pipx/
-python -m pip install --upgrade pip setuptools six wheel
-python -m pip install --user pipx && python -m pipx ensurepath
-python -m pip install pytest-cov -r /maps/requirements.txt
+python -m pip install --upgrade pip setuptools six wheel &>/dev/null
+python -m pip install --user pipx && python -m pipx ensurepath &>/dev/null
+python -m pip install pytest-cov -r /maps/requirements.txt &>/dev/null
 
 export GEM_PATH=${VENDOR_BUNDLE}/gem
 export GEM_HOME=${GEM_PATH}/ruby/${RUBY_VERSION}

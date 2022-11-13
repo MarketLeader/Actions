@@ -9,10 +9,12 @@ ARG DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update &>/dev/null
 RUN apt-get install python3.8-venv &>/dev/null
+
 RUN python3.8 -m venv /maps
+ENV PATH="/maps/bin:${PATH}"
 
 ADD . /maps
-RUN source /maps/bin/activate
+RUN chown -R root:root /maps
 
-ENV PATH="${PATH}:/maps/Scripts/"
-ENTRYPOINT ["entrypoint.sh"]
+RUN source /maps/bin/activate
+ENTRYPOINT ["/maps/Scripts/entrypoint.sh"]

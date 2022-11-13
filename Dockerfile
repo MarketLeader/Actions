@@ -7,8 +7,8 @@ LABEL version=v1.0.9
 ENV DEBCONF_NOWARNINGS="yes"
 ARG DEBIAN_FRONTEND=noninteractive
 
-RUN apt-get update
-RUN apt-get install -y --no-install-recommends gcc
+RUN apt-get update &>/dev/null
+RUN apt-get install -y --no-install-recommends gcc &>/dev/null
 
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
@@ -17,7 +17,8 @@ RUN python -m venv /opt/venv
 ENV PATH="/opt/venv/bin:$PATH"
 
 COPY requirements.txt .
-RUN pip install -r requirements.txt
+RUN python -m pip install --upgrade pip setuptools six wheel &>/dev/null
+RUN pip install pytest-cov -r requirements.txt &>/dev/null
 
 # final stage
 FROM tensorflow/tensorflow:latest-gpu
@@ -29,7 +30,7 @@ ENV DEBCONF_NOWARNINGS="yes"
 ARG DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update &>/dev/null
-RUN apt-get install --no-install-recommends apt-utils &>/dev/null
+RUN apt-get install -y --no-install-recommends apt-utils &>/dev/null
 
 ADD . /maps
 COPY --from=builder /opt/venv /maps

@@ -90,7 +90,7 @@ export PIP_CACHE_DIR=${VENDOR_BUNDLE}/pip
 
 # https://pypi.org/project/pipx/
 python -m pip install --upgrade pip setuptools six wheel &>/dev/null
-python -m pip install --user pipx && python -m pipx ensurepath &>/dev/null
+python -m pip install pipx && python -m pipx ensurepath &>/dev/null
 python -m pip install pytest-cov -r /maps/requirements.txt &>/dev/null
 
 export GEM_PATH=${VENDOR_BUNDLE}/gem
@@ -158,9 +158,9 @@ build_jekyll() {
 
   # vendor/bundle
   echo -e "\n$hr\nVENDOR BUNDLE\n$hr"
-  chown -R root:root ${VENDOR_BUNDLE} && chmod a+rwx,o-w ${VENDOR_BUNDLE}
+  chown -R root:root ${VENDOR_BUNDLE} && chmod a+rwx,o-w ${PIP_CACHE_DIR}
   echo ${VENDOR_BUNDLE} && ls -al ${VENDOR_BUNDLE} && echo -e "\n"
-  echo ${VENDOR_BUNDLE}/pip && ls -al ${VENDOR_BUNDLE}/pip && echo -e "\n"
+  echo ${PIP_CACHE_DIR} && ls -al ${PIP_CACHE_DIR} && echo -e "\n"
   echo ${VENDOR_BUNDLE}/npm && ls -al ${VENDOR_BUNDLE}/npm && echo -e "\n"
   echo ${GEM_PATH} && ls -al ${GEM_PATH} && echo -e "\n"
   echo ${GEM_HOME} && ls -al ${GEM_HOME} && echo -e "\n"

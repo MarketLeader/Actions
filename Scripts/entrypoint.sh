@@ -77,7 +77,7 @@ echo "https://{ACTOR}:${TOKEN}@github.com" > ~/.git-credentials
 git clone --recurse-submodules -j8 ${REPOSITORY} /maps/feed/default &>/dev/null
 
 export PIP_CACHE_DIR=${VENDOR_BUNDLE}/pip
-python -m pip install -U --force-reinstall pip setuptools six wheel &>/dev/null
+python -m pip install -U --upgrade pip setuptools six wheel &>/dev/null
 pip install pytest-cov -r ${REQUIREMENT} --root-user-action=ignore &>/dev/null
 
 apt-get install -qq npm &>/dev/null

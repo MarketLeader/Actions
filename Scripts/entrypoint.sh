@@ -77,19 +77,19 @@ git clone --recurse-submodules -j8 ${REPOSITORY} /maps/feed/default &>/dev/null
 apt-get install -qq npm &>/dev/null && apt-get install -qq yarn &>/dev/null
 npm install --prefix /maps --cache ${VENDOR_BUNDLE}/npm &>/dev/null
 
-# https://pypi.org/project/pipx/
 export PATH=$PATH:${HOME}/.local/bin
 export PIP_CACHE_DIR=${VENDOR_BUNDLE}/pip
 
-python -m pip install --upgrade pip
+# https://pypi.org/project/pipx/
+python -m pip install --upgrade pip setuptools six wheel
 python -m pip install --user pipx && python -m pipx ensurepath
-pipx install setuptools six wheel pytest-cov -r /maps/requirements.txt
+pipx install pytest-cov -r /maps/requirements.txt
 
-# https://stackoverflow.com/a/30369485/4058484
 export GEM_PATH=${VENDOR_BUNDLE}/gem
 export GEM_HOME=${GEM_PATH}/ruby/${RUBY_VERSION}
 export PATH=$PATH:${GEM_HOME}/bin
 
+# https://stackoverflow.com/a/30369485/4058484
 apt-get install -qq ruby ruby-dev ruby-bundler build-essential &>/dev/null
 gem install rails --version "$RAILS_VERSION" --quiet --silent &>/dev/null
 

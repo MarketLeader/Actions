@@ -10,7 +10,8 @@ ENV PATH="${PATH}:/root/.local/bin"
 
 RUN python3 -m pip install --user pipx
 RUN python3 -m pipx ensurepath
-RUN pipx install virtualenv /maps
+RUN pipx install virtualenv
+RUN python3 -m virtualenv /maps
 
 ADD . /maps
 RUN source /maps/bin/activate

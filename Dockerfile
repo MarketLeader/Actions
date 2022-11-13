@@ -6,12 +6,12 @@ ENV NVIDIA_DRIVER_CAPABILITIES compute,utility
 
 ENV DEBCONF_NOWARNINGS="yes"
 ARG DEBIAN_FRONTEND=noninteractive
-ENV PATH="${PATH}:/root/.local/bin"
 
 RUN apt-get update &>/dev/null
-RUN apt-get install python3.8-venv
+RUN apt-get install python3.8-venv &>/dev/null
 RUN python3.8 -m venv /maps
 
 ADD . /maps
 RUN source /maps/bin/activate
+ENV PATH="${PATH}:${HOME}/.local/bin"
 ENTRYPOINT ["/maps/Scripts/entrypoint.sh"]

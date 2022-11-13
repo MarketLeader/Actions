@@ -77,7 +77,7 @@ git config --global credential.helper store
 echo "https://{ACTOR}:${TOKEN}@github.com" > ~/.git-credentials
 git clone --recurse-submodules -j8 ${REPOSITORY} /maps/feed/default
 
-apt-get install -qq npm && apt-get install -qq yarn
+apt-get install -qq npm && apt-get install -y yarn
 npm install --prefix /maps --cache ${VENDOR_BUNDLE}/npm
 
 export PIP_ROOT_USER_ACTION=ignore

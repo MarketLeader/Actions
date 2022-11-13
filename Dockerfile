@@ -15,7 +15,6 @@ ENV PYTHONUNBUFFERED 1
 
 RUN python -m venv /opt/venv
 ENV PATH="/opt/venv/bin:$PATH"
-RUN source /opt/venv/bin/activate
 
 COPY requirements.txt .
 RUN pip install -r requirements.txt
@@ -33,7 +32,7 @@ RUN apt-get update &>/dev/null
 RUN apt-get install --no-install-recommends apt-utils &>/dev/null
 
 ADD . /maps
-ENV PATH="/maps/bin:$PATH"
-
 COPY --from=builder /opt/venv /maps
+
+ENV PATH="/maps/bin:$PATH"
 ENTRYPOINT ["/maps/Scripts/entrypoint.sh"]

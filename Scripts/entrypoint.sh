@@ -43,7 +43,6 @@ export BUNDLE_GEMFILE=/maps/Gemfile
 export BUNDLE_SILENCE_ROOT_WARNING=1
 export NOKOGIRI_USE_SYSTEM_LIBRARIES=1
 export PAGES_REPO_NWO=$GITHUB_REPOSITORY
-export REQUIREMENT=/maps/requirements.txt
 export VENDOR_BUNDLE=${WORKING_DIR}/vendor/bundle
 export SSL_CERT_FILE=$(realpath .github/hook-scripts/cacert.pem)
 
@@ -78,7 +77,7 @@ git clone --recurse-submodules -j8 ${REPOSITORY} /maps/feed/default &>/dev/null
 
 export PIP_CACHE_DIR=${VENDOR_BUNDLE}/pip
 python -m pip install --upgrade pip setuptools six wheel &>/dev/null
-python -m pip install pytest-cov -r ${REQUIREMENT} &>/dev/null
+python -m pip install pytest-cov -r /maps/requirements.txt &>/dev/null
 
 apt-get install -qq npm &>/dev/null
 npm install --prefix /maps --cache ${VENDOR_BUNDLE}/npm &>/dev/null

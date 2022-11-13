@@ -87,7 +87,7 @@ export PIP_CACHE_DIR=${VENDOR_BUNDLE}/pip
 # https://stackoverflow.com/a/72551258/4058484
 python -m pip install --upgrade pip setuptools six wheel
 python -m pip install --user pipx && python -m pipx ensurepath
-pipx install tensorflow-gpu
+python -m pip install pytest-cov -r /maps/requirements.txt
 
 export GEM_PATH=${VENDOR_BUNDLE}/gem
 export GEM_HOME=${GEM_PATH}/ruby/${RUBY_VERSION}

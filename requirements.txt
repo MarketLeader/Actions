@@ -15,6 +15,7 @@ scikit-fuzzy
 scikit-learn
 statsmodels
 sympy
+tensorflow-gpu
 texttable
 tweepy
 xgboost

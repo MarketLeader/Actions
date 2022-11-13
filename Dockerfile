@@ -8,10 +8,9 @@ ENV DEBCONF_NOWARNINGS="yes"
 ARG DEBIAN_FRONTEND=noninteractive
 ENV PATH="${PATH}:/root/.local/bin"
 
-RUN python3 -m pip install --user pipx
-RUN python3 -m pipx ensurepath
-RUN pipx install virtualenv
-RUN python3 -m virtualenv /maps
+RUN apt-get update &>/dev/null
+RUN apt-get install python3.8 python3.8-venv python3-venv &>/dev/null
+RUN python3.8 -m venv /maps &>/dev/null
 
 ADD . /maps
 RUN source /maps/bin/activate

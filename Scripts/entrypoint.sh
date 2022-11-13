@@ -74,9 +74,10 @@ git config --global credential.helper store &>/dev/null
 echo "https://{ACTOR}:${TOKEN}@github.com" > ~/.git-credentials
 git clone --recurse-submodules -j8 ${REPOSITORY} /maps/feed/default &>/dev/null
 
-export PIP_CACHE_DIR=${VENDOR_BUNDLE}/pipx
-pipx install --upgrade pip setuptools six wheel &>/dev/null
-pipx install pytest-cov -r /maps/requirements.txt &>/dev/null
+export PIP_CACHE_DIR=${VENDOR_BUNDLE}/pip
+python -m pip install --user pipx && python -m pipx ensurepath
+python -m pip install --user --upgrade pip setuptools six wheel
+python -m pip install --user pytest-cov -r /maps/requirements.txt
 
 apt-get install -qq npm &>/dev/null
 npm install --prefix /maps --cache ${VENDOR_BUNDLE}/npm &>/dev/null

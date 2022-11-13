@@ -84,11 +84,10 @@ git clone --recurse-submodules -j8 ${REPOSITORY} /maps/feed/default &>/dev/null
 apt-get install -qq npm &>/dev/null && apt-get install -qq yarn &>/dev/null
 npm install --prefix /maps --cache ${VENDOR_BUNDLE}/npm &>/dev/null
 
-export PYTHONUNBUFFERED=1
 export PATH=${HOME}/.local/bin:$PATH
 export PIP_CACHE_DIR=${VENDOR_BUNDLE}/pip
 
-# https://github.com/SauravMaheshkar/NeRF
+# https://pypi.org/project/pipx/
 python -m pip install --no-cache-dir --upgrade pip setuptools isort wheel &>/dev/null
 python -m pip install --no-cache-dir pytest-cov -r /maps/requirements.txt &>/dev/null
 python -m pip install jax[cuda11_cudnn82] \

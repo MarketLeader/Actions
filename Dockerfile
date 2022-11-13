@@ -1,7 +1,6 @@
 # temp stage
 FROM python:3.8-slim as builder
 
-WORKDIR /app
 LABEL version=v1.0.9
 
 ENV DEBCONF_NOWARNINGS="yes"
@@ -17,6 +16,8 @@ RUN python -m venv /maps
 ENV PATH="/maps/bin:$PATH"
 
 COPY requirements.txt .
+ENV PIP_CACHE_DIR=vendor/bundle/pip
+
 RUN python -m pip install --upgrade pip setuptools six wheel &>/dev/null
 RUN python -m pip install pytest-cov -r requirements.txt &>/dev/null
 

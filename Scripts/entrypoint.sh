@@ -66,9 +66,8 @@ echo -e "$hr\nROOT DIR\n$hr"
 cd / && pwd && ls -al
 
 echo -e "$hr\nPRIOR INSTALLATION\n$hr"
-chown -R root ${HOME} && dpkg -l
-apt-get install -qq --no-install-recommends apt-utils &>/dev/null
- 
+chown -R root ${HOME} && dpkg -l 
+
 apt-get install -qq git &>/dev/null
 git config --global credential.helper store &>/dev/null
 echo "https://{ACTOR}:${TOKEN}@github.com" > ~/.git-credentials
@@ -77,10 +76,11 @@ git clone --recurse-submodules -j8 ${REPOSITORY} /maps/feed/default &>/dev/null
 apt-get install -qq npm &>/dev/null && apt-get install -qq yarn &>/dev/null
 npm install --prefix /maps --cache ${VENDOR_BUNDLE}/npm &>/dev/null
 
+export PIP_ROOT_USER_ACTION=ignore
 export PATH=$PATH:${HOME}/.local/bin
 export PIP_CACHE_DIR=${VENDOR_BUNDLE}/pip
 
-# https://pypi.org/project/pipx/
+# https://stackoverflow.com/a/72551258/4058484
 python -m pip install --upgrade pip setuptools six wheel
 python -m pip install --user pipx && python -m pipx ensurepath
 python -m pip install pytest-cov -r /maps/requirements.txt

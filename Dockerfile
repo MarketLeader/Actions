@@ -1,6 +1,25 @@
+# temp stage
+FROM python:3.8-slim as builder
+
+WORKDIR /app
+
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONUNBUFFERED 1
+
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends gcc
+
+RUN python -m venv /opt/venv
+ENV PATH="/opt/venv/bin:$PATH"
+
+COPY requirements.txt .
+RUN pip install -r requirements.txt
+
+# final stage
 FROM tensorflow/tensorflow:latest-gpu
 
 LABEL version=v1.0.9
+
 ENV NVIDIA_VISIBLE_DEVICES all
 ENV NVIDIA_DRIVER_CAPABILITIES compute,utility
 
@@ -8,10 +27,12 @@ ENV DEBCONF_NOWARNINGS="yes"
 ARG DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update &>/dev/null
-RUN apt-get install python3.8-venv &>/dev/null
-RUN python3.8 -m venv /maps
+RUN apt-get install -qq --no-install-recommends apt-utils &>/dev/null
+
+COPY --from=builder /opt/venv /maps
 
 ADD . /maps
+ENV PATH="/maps/bin:$PATH"
+
 RUN source /maps/bin/activate
-ENV PATH="${PATH}:/maps/Scripts/"
-ENTRYPOINT ["entrypoint.sh"]
+RENTRYPOINT ["/maps/Scripts/entrypoint.sh"]

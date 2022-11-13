@@ -9,7 +9,7 @@ ARG DEBIAN_FRONTEND=noninteractive
 ENV PATH="${PATH}:/root/.local/bin"
 
 RUN apt-get update &>/dev/null
-RUN apt-get install python3.8 python3.8-venv python3-venv
+RUN apt-get install python3.8 python3.8-venv
 RUN python3.8 -m venv /maps &>/dev/null
 
 ADD . /maps

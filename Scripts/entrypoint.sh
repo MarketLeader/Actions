@@ -84,12 +84,15 @@ git clone --recurse-submodules -j8 ${REPOSITORY} /maps/feed/default &>/dev/null
 apt-get install -qq npm &>/dev/null && apt-get install -qq yarn &>/dev/null
 npm install --prefix /maps --cache ${VENDOR_BUNDLE}/npm &>/dev/null
 
+export PYTHONUNBUFFERED=1
 export PATH=${HOME}/.local/bin:$PATH
 export PIP_CACHE_DIR=${VENDOR_BUNDLE}/pip
 
-# https://pypi.org/project/pipx/
-python -m pip install --upgrade pip setuptools six wheel &>/dev/null
-python -m pip install pytest-cov -r /maps/requirements.txt &>/dev/null
+# https://github.com/SauravMaheshkar/NeRF
+python -m pip install --no-cache-dir --upgrade pip setuptools isort wheel &>/dev/null
+python -m pip install --no-cache-dir pytest-cov -r /maps/requirements.txt &>/dev/null
+python -m pip install jax[cuda11_cudnn82] \
+  -f https://storage.googleapis.com/jax-releases/jax_releases.html
 
 export GEM_PATH=${VENDOR_BUNDLE}/gem
 export GEM_HOME=${GEM_PATH}/ruby/${RUBY_VERSION}

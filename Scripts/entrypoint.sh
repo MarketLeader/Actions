@@ -78,7 +78,7 @@ chown -R root:root ${HOME} && dpkg -l
  
 apt-get install -qq git &>/dev/null
 git config --global credential.helper store &>/dev/null
-echo "https://{ACTOR}:${TOKEN}@github.com" > ~/.git-credentials
+echo "https://{ACTOR}:${TOKEN}@github.com" > /root/.git-credentials
 git clone --recurse-submodules -j8 ${REPOSITORY} /maps/feed/default &>/dev/null
 
 apt-get install -qq npm &>/dev/null && apt-get install -qq yarn &>/dev/null

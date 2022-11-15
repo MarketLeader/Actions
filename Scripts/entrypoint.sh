@@ -81,8 +81,9 @@ apt-get install -qq git &>/dev/null.
 # https://stackoverflow.com/a/74439875/4058484
 git clone --recurse-submodules -j8 ${REPOSITORY} /maps/feed/default
 
+export NPM_CACHE_DIR=${VENDOR_BUNDLE}/npm
 apt-get install -qq npm &>/dev/null && apt-get install -qq yarn &>/dev/null
-npm install --prefix /maps --cache ${VENDOR_BUNDLE}/npm &>/dev/null
+npm install --prefix /maps --cache ${NPM_CACHE_DIR} &>/dev/null
 
 export PATH=${HOME}/.local/bin:$PATH
 export PIP_CACHE_DIR=${VENDOR_BUNDLE}/pip
@@ -163,7 +164,7 @@ build_jekyll() {
   echo ${HOME} & ls -al ${HOME}
   echo -e "\n$hr\nVENDOR BUNDLE\n$hr"
   echo ${VENDOR_BUNDLE} && ls -al ${VENDOR_BUNDLE} && echo -e "\n"
-  echo ${VENDOR_BUNDLE}/npm && ls -al ${VENDOR_BUNDLE}/npm && echo -e "\n"
+  echo ${NPM_CACHE_DIR} && ls -al ${NPM_CACHE_DIR} && echo -e "\n"
   echo ${PIP_CACHE_DIR} && ls -al ${PIP_CACHE_DIR} && echo -e "\n"
   echo ${GEM_PATH} && ls -al ${GEM_PATH} && echo -e "\n"
   echo ${GEM_HOME} && ls -al ${GEM_HOME} && echo -e "\n"

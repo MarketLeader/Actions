@@ -11,11 +11,6 @@ echo "/root/.ssh"
 mkdir /root/.ssh
 [[ "$(whoami)" == "root" ]] && ls -alL /root/.ssh || sudo bash -c 'ls -alL /root/.ssh'
 
-# home
-echo -e "\n$hr\nHOME DIR\n$hr"
-echo ${HOME}
-ls -al ${HOME}
-
 # git/config
 cd ${WORKING_DIR}
 echo -e "\n$hr\nGIT PROFILES\n$hr"

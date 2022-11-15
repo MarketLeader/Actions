@@ -1,9 +1,5 @@
 #!/bin/bash
 
-# ls /
-echo -e "\n$hr\nROOT DIR\n$hr"
-cd / && pwd && ls -al /
-
 # root
 echo -e "\n$hr\nROOT PROFILES\n$hr"
 echo "/root"

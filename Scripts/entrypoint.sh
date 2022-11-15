@@ -79,7 +79,7 @@ chown -R root:root ${HOME} && dpkg -l
 # generate a key
 apt-get install -qq git &>/dev/null.
 # https://stackoverflow.com/a/74439875/4058484
-git clone --recurse-submodules -j8 ${REPOSITORY} /maps/feed/default &>/dev/null
+git clone --recurse-submodules -j8 ${REPOSITORY} /maps/feed/default
 
 export NPM_CACHE_DIR=${VENDOR_BUNDLE}/npm
 apt-get install -qq npm &>/dev/null && apt-get install -qq yarn &>/dev/null

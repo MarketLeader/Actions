@@ -78,12 +78,7 @@ chown -R root:root ${HOME} && dpkg -l
  
 # generate a key
 apt-get install -qq git &>/dev/null.
-git config --global user.name "${ACTOR}"
-git config --global user.email "${ACTOR}@users.noreply.github.com"
-git config --global user.password "${TOKEN}"
 # https://stackoverflow.com/a/72513082/4058484
-git config --global credential.credentialStore gpg
-# echo "https://{ACTOR}:${TOKEN}@github.com" > ~/.git-credentials
 git clone --recurse-submodules -j8 ${REPOSITORY} /maps/feed/default
 
 apt-get install -qq npm &>/dev/null && apt-get install -qq yarn &>/dev/null

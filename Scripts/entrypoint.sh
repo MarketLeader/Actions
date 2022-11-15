@@ -159,7 +159,8 @@ build_jekyll() {
 
   # vendor/bundle
   echo -e "\n$hr\nVENDOR BUNDLE\n$hr"
-  chown -R root:root ${HOME} && mv -b ${HOME}/.* ${VENDOR_BUNDLE}/ && ls -al ${HOME}
+  chown -R root:root ${HOME} && mv -f ${HOME}/.gem ${VENDOR_BUNDLE}/gem
+  mv -f ${HOME}/.keras ${VENDOR_BUNDLE}/keras && ls -al ${HOME}
   echo ${VENDOR_BUNDLE} && ls -al ${VENDOR_BUNDLE} && echo -e "\n"
   echo ${NPM_CACHE_DIR} && ls -al ${NPM_CACHE_DIR} && echo -e "\n"
   echo ${PIP_CACHE_DIR} && ls -al ${PIP_CACHE_DIR} && echo -e "\n"

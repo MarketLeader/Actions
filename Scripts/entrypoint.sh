@@ -167,6 +167,7 @@ build_jekyll() {
   echo ${GEM_PATH} && ls -al ${GEM_PATH} && echo -e "\n"
   echo ${GEM_HOME} && ls -al ${GEM_HOME} && echo -e "\n"
   chmod -R a+rwx,o-w ${PIP_CACHE_DIR}
+  echo -e "Source cleaning..\n"
   rm -rf gem && ls -al
 }
 

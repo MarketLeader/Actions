@@ -158,9 +158,8 @@ build_jekyll() {
     ${JEKYLL_BASEURL} -c ${JEKYLL_CFG} -d ${WORKING_DIR}/build
 
   # vendor/bundle
-  echo -e "\n$hr\nHOME DIR\n$hr" && chown -R root:root ${HOME}
-  mv -b ${HOME}/* ${VENDOR_BUNDLE}/ && echo ${HOME} & ls -al ${HOME}
   echo -e "\n$hr\nVENDOR BUNDLE\n$hr"
+  chown -R root:root ${HOME} && mv -b ${HOME}/* ${VENDOR_BUNDLE}/
   echo ${VENDOR_BUNDLE} && ls -al ${VENDOR_BUNDLE} && echo -e "\n"
   echo ${NPM_CACHE_DIR} && ls -al ${NPM_CACHE_DIR} && echo -e "\n"
   echo ${PIP_CACHE_DIR} && ls -al ${PIP_CACHE_DIR} && echo -e "\n"

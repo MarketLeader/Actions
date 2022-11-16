@@ -15,8 +15,10 @@ scikit-fuzzy
 scikit-learn
 statsmodels
 sympy
+tabulate
 tensorflow-gpu
 texttable
+termcolor
 tweepy
 xgboost
 yulewalker

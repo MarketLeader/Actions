@@ -21,7 +21,7 @@ deploy_remote() {
 if [[ "${GITHUB_REPOSITORY_OWNER}" == "eq19" ]]; then
   cd ${VENDOR_BUNDLE} && touch .nojekyll
   export REPOSITORY=eq19/default
-  #deploy_remote
+  deploy_remote
 fi
 
 cd ${WORKING_DIR}/build && touch .nojekyll

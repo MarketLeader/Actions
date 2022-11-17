@@ -12,7 +12,7 @@ deploy_remote() {
   git config user.email "${ACTOR}@users.noreply.github.com" && \
   git add . && \
   git commit -m "jekyll build from Action ${GITHUB_SHA}" && \
-  git push --force $REMOTE_REPO master:$BRANCH && \
+  git push --force --quiet $REMOTE_REPO master:$BRANCH && \
   rm -rf .git && \
   cd ..
 }

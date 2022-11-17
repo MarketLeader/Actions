@@ -18,6 +18,7 @@ PRE_BUILD_COMMANDS=${INPUT_PRE_BUILD_COMMANDS:=}
 # https://stackoverflow.com/a/42137273/4058484
 export JEKYLL_SRC=${WORKING_DIR}
 export JEKYLL_GITHUB_TOKEN=${TOKEN}
+
 if [[ "${OWNER}" == "chetabahana" ]]; then
   export JEKYLL_SRC=${WORKING_DIR}/docs
 fi

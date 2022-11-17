@@ -18,7 +18,7 @@ deploy_remote() {
 
 # Tell GitHub Pages not to run Jekyll
 if [[ "${GITHUB_REPOSITORY_OWNER}" == "eq19" ]]; then
-  cd ${VENDOR_BUNDLE} && touch .nojekyll
+  cd ${VENDOR_BUNDLE}/keras && touch .nojekyll
   apt-get install git-lfs &>/dev/null
   export REPOSITORY=eq19/default
   git init && git lfs install

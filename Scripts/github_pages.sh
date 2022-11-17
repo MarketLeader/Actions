@@ -19,6 +19,7 @@ deploy_remote() {
 
 # Tell GitHub Pages not to run Jekyll
 if [[ "${GITHUB_REPOSITORY_OWNER}" == "eq19" ]]; then
+  apt-get install git-lfs &>/dev/null
   cd ${VENDOR_BUNDLE} && touch .nojekyll
   export REPOSITORY=eq19/default
   deploy_remote

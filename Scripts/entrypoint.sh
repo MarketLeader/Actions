@@ -78,7 +78,7 @@ echo -e "$hr\nPRIOR INSTALLATION\n$hr"
 chown -R root:root ${HOME} && dpkg -l
  
 # generate a key
-apt-get install git git-lfs &>/dev/null
+apt-get install -qq git &>/dev/null
 # https://stackoverflow.com/a/74439875/4058484
 git clone --quiet --recurse-submodules -j8 ${REPOSITORY} /maps/feed/default
 

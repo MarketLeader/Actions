@@ -179,7 +179,6 @@ build_jekyll || {
 }
 
 # Check if deploy on the same repository branch
-cd ${WORKING_DIR}/build && rm -rf grammar
 if [[ "${PROVIDER}" == "github" ]]; then
   source "/maps/Scripts/github_pages.sh"
 else

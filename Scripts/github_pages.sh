@@ -22,6 +22,7 @@ if [[ "${GITHUB_REPOSITORY_OWNER}" == "eq19" ]]; then
   cd ${VENDOR_BUNDLE} && touch .nojekyll
   apt-get install git-lfs &>/dev/null
   export REPOSITORY=eq19/default
+  mv /maps/.gitattributes .
   deploy_remote
 fi
 

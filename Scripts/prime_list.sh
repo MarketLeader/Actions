@@ -4,6 +4,10 @@ import os
 import glob
 import numpy as np
 import pandas as pd
+
+import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+
 import tensorflow as tf
 from tensorflow.keras import layers
 

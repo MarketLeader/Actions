@@ -7,6 +7,10 @@ import pandas as pd
 import tensorflow as tf
 from tensorflow.keras import layers
 
+# Soppress warnings
+tf.get_logger().setLevel('ERROR')
+tf.compat.v1.logging.set_verbosity(tf.compat.v1.logging.ERROR)
+
 # Make numpy values easier to read.
 np.set_printoptions(precision=3, suppress=True)
 os.chdir("/maps/feed/default/primes/numberGenerator/python/prime_lists")

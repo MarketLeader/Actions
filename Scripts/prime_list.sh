@@ -5,13 +5,11 @@ import glob
 import numpy as np
 import pandas as pd
 
-import os
+# Suppress warnings
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
-
 import tensorflow as tf
 from tensorflow.keras import layers
 
-# Soppress warnings
 tf.get_logger().setLevel('ERROR')
 tf.compat.v1.logging.set_verbosity(tf.compat.v1.logging.ERROR)
 

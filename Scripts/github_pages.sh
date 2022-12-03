@@ -19,7 +19,8 @@ if [[ "${GITHUB_REPOSITORY_OWNER}" == "eq19" ]]; then
   git init && git lfs install
   mv -f /maps/.gitattributes .
   deploy_remote || {
-    git remote add origin $REMOTE_REPO && git fetch
+    git remote add origin $REMOTE_REPO
+    git push origin --delete $BRANCH
     git push --force --quiet -u origin master:$BRANCH
   }
   rm -rf .git

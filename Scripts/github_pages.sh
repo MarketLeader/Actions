@@ -7,8 +7,6 @@ echo -e "Deploying to https://github.com/${GITHUB_REPOSITORY}.git\n"
 
 deploy_remote() {
   REMOTE_REPO="https://${ACTOR}:${TOKEN}@github.com/${REPOSITORY}.git" && \
-  git config user.email "${ACTOR}@users.noreply.github.com" && \
-  git config user.name "${ACTOR}" && \
   git add . && \
   git commit -m "jekyll build from Action ${GITHUB_SHA}" && \
   git push --force --quiet $REMOTE_REPO master:$BRANCH
@@ -23,13 +21,14 @@ if [[ "${GITHUB_REPOSITORY_OWNER}" == "eq19" ]]; then
   mv -f /maps/.gitattributes .
   deploy_remote || {
     git fetch && \
-    git push && \
-    rm -rf .git
+    deploy_remote
   }
+  rm -rf .git
 fi
 
 cd ${WORKING_DIR}/build && touch .nojekyll
 export REPOSITORY=${GITHUB_REPOSITORY}
 git init && deploy_remote
+rm -rf .git
 
 exit $?

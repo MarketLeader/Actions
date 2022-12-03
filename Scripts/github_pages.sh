@@ -7,20 +7,28 @@ echo -e "Deploying to https://github.com/${GITHUB_REPOSITORY}.git\n"
 
 deploy_remote() {
   REMOTE_REPO="https://${ACTOR}:${TOKEN}@github.com/${REPOSITORY}.git"
-  git remote add origin $REMOTE_REPO && git push origin --delete $BRANCH
   git add . && git commit -m "jekyll build from Action ${GITHUB_SHA}"
-  rm -rf .git
+  git push --force --quiet $REMOTE_REPO master:$BRANCH
 }
 
 # Tell GitHub Pages not to run Jekyll
 if [[ "${GITHUB_REPOSITORY_OWNER}" == "eq19" ]]; then
-  cd ${VENDOR_BUNDLE}/keras && touch .nojekyll && mv -f /maps/.gitattributes .
-  export REPOSITORY=eq19/default && apt-get install git-lfs &>/dev/null
-  git init && git lfs install && deploy_remote
+  cd ${VENDOR_BUNDLE}/keras && touch .nojekyll
+  apt-get install git-lfs &>/dev/null
+  export REPOSITORY=eq19/default
+  git init && git lfs install
+  mv -f /maps/.gitattributes .
+  deploy_remote || {
+    git remote add origin $REMOTE_REPO
+    git push origin --delete $BRANCH
+    git push --force --quiet -u origin master:$BRANCH
+  }
+  rm -rf .git
 fi
 
 cd ${WORKING_DIR}/build && touch .nojekyll
 export REPOSITORY=${GITHUB_REPOSITORY}
 git init && deploy_remote
+rm -rf .git
 
 exit $?

@@ -16,16 +16,13 @@ cd ${WORKING_DIR}
 echo -e "\n$hr\nGIT PROFILES\n$hr"
 ls -al .git
 
-unset_git() {
-  chown -R $(whoami) .git
-  git config --unset http.https://github.com/.extraheader
-  git config --unset-all http.https://github.com/.extraheader
-  git config --global --unset http.https://github.com/.extraheader
-  git config --system --unset http.https://github.com/.extraheader
-}
-
 echo -e "\n$hr\nGIT CPNFIG\n$hr"
-unset_git && cat .git/config
+chown -R $(whoami) .git/config
+git config --unset http.https://github.com/.extraheader
+git config --unset-all http.https://github.com/.extraheader
+git config --global --unset http.https://github.com/.extraheader
+git config --system --unset http.https://github.com/.extraheader
+cat .git/config
 
 # environtment
 echo -e "\n$hr\nENVIRONTMENT\n$hr"

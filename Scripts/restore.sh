@@ -3,7 +3,7 @@
 cd /maps/feed/default
 git submodule update --init --recursive
 git submodule foreach --recursive git fetch
-git submodule foreach 'git fetch origin; git checkout $(git rev-parse --abbrev-ref HEAD); git reset --hard origin/$(git rev-parse --abbrev-ref HEAD); chown -R $(whoami) .git; git config --unset http.https://github.com/.extraheader; git config --unset-all http.https://github.com/.extraheader; git config --global --unset http.https://github.com/.extraheader; git config --system --unset http.https://github.com/.extraheader;git submodule update --recursive; git clean -dfx'
+git submodule foreach 'git fetch origin; git checkout $(git rev-parse --abbrev-ref HEAD); git reset --hard origin/$(git rev-parse --abbrev-ref HEAD); chown -R $(whoami) .git; chmod -R +x .git; git config --unset http.https://github.com/.extraheader; git config --unset-all http.https://github.com/.extraheader; git config --global --unset http.https://github.com/.extraheader; git config --system --unset http.https://github.com/.extraheader;git submodule update --recursive; git clean -dfx'
 
 # Restore the modification time (mtime) of all files in work tree, based on the
 # date of the most recent commit that modified the file.

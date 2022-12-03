@@ -11,8 +11,7 @@ deploy_remote() {
   git config user.name "${ACTOR}" && \
   git add . && \
   git commit -m "jekyll build from Action ${GITHUB_SHA}" && \
-  git push --force --quiet $REMOTE_REPO master:$BRANCH && \
-  cd ..
+  git push --force --quiet $REMOTE_REPO master:$BRANCH
 }
 
 # Tell GitHub Pages not to run Jekyll
@@ -24,9 +23,9 @@ if [[ "${GITHUB_REPOSITORY_OWNER}" == "eq19" ]]; then
   mv -f /maps/.gitattributes .
   deploy_remote || {
     git fetch && \
-    git push
-}
-
+    git push && \
+    rm -rf .git
+  }
 fi
 
 cd ${WORKING_DIR}/build && touch .nojekyll

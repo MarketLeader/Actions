@@ -80,10 +80,6 @@ chown -R root:root ${HOME} && dpkg -l
 # cloning default repository
 apt-get install -qq git &>/dev/null
 # https://stackoverflow.com/a/74439875/4058484
-git config --global user.name "${ACTOR}"
-git config --global user.email "${ACTOR}@users.noreply.github.com"
-git config --global credential.helper store &>/dev/null
-echo "https://{ACTOR}:${TOKEN}@github.com" > /root/.git-credentials
 git clone --quiet --recurse-submodules -j8 ${REPOSITORY} /maps/feed/default
 
 export NPM_CACHE_DIR=${VENDOR_BUNDLE}/npm

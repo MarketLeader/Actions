@@ -6,9 +6,8 @@ echo -e "Deploying to ${GITHUB_REPOSITORY} on branch ${BRANCH}"
 echo -e "Deploying to https://github.com/${GITHUB_REPOSITORY}.git\n"
 
 deploy_remote() {
-  REMOTE_REPO="https://${ACTOR}:${TOKEN}@github.com/${REPOSITORY}.git" && \
-  git add . && \
-  git commit -m "jekyll build from Action ${GITHUB_SHA}" && \
+  REMOTE_REPO="https://${ACTOR}:${TOKEN}@github.com/${REPOSITORY}.git"
+  git add . && git commit -m "jekyll build from Action ${GITHUB_SHA}"
   git push --force --quiet $REMOTE_REPO master:$BRANCH
 }
 
@@ -20,8 +19,8 @@ if [[ "${GITHUB_REPOSITORY_OWNER}" == "eq19" ]]; then
   git init && git lfs install
   mv -f /maps/.gitattributes .
   deploy_remote || {
-    git fetch && \
-    deploy_remote
+    git remote add origin $REMOTE_REPO && git fetch
+    git push --force --quiet -u origin master:$BRANCH
   }
   rm -rf .git
 fi

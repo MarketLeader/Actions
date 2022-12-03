@@ -29,6 +29,7 @@
 
 # to be ignored in subdirectories
 docs/
+feed/
 default/
 Dekstop/
 AppData/

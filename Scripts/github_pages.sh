@@ -12,7 +12,6 @@ deploy_remote() {
   git add . && \
   git commit -m "jekyll build from Action ${GITHUB_SHA}" && \
   git push --force --quiet $REMOTE_REPO master:$BRANCH && \
-  rm -rf .git && \
   cd ..
 }
 
@@ -23,7 +22,11 @@ if [[ "${GITHUB_REPOSITORY_OWNER}" == "eq19" ]]; then
   export REPOSITORY=eq19/default
   git init && git lfs install
   mv -f /maps/.gitattributes .
-  deploy_remote
+  deploy_remote || {
+    git fetch && \
+    git push
+}
+
 fi
 
 cd ${WORKING_DIR}/build && touch .nojekyll

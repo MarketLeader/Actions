@@ -25,6 +25,7 @@ Gem::Specification.new do |spec|
 # spec.add_development_dependency "nokogiri", "~> 1.13.7"
 # spec.add_development_dependency "github_api", "~> 0.19.0"
   spec.add_development_dependency "jekyll-gist", "~> 1.5.0"
+  spec.add_development_dependency "factory_bot", "~> 6.2.1"
   spec.add_development_dependency "jekyll-feed", "~> 0.15.1"
   spec.add_development_dependency "jekyll-avatar", "~> 0.7.0"
 # spec.add_development_dependency "html-pipeline", "~> 2.14.2"

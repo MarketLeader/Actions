@@ -78,30 +78,34 @@ echo -e "$hr\nPRIOR INSTALLATION\n$hr"
 chown -R root:root ${HOME} && dpkg -l
  
 # cloning default repository
-apt-get install -qq git
+apt-get install -qq git &>/dev/null
 # https://stackoverflow.com/a/74439875/4058484
+git config --global user.name "${ACTOR}"
+git config --global user.email "${ACTOR}@users.noreply.github.com"
+git config --global credential.helper store &>/dev/null
+echo "https://{ACTOR}:${TOKEN}@github.com" > /root/.git-credentials
 git clone --quiet --recurse-submodules -j8 ${REPOSITORY} /maps/feed/default
 
 export NPM_CACHE_DIR=${VENDOR_BUNDLE}/npm
-apt-get install -qq npm && apt-get install -qq yarn
-npm install --prefix /maps --cache ${NPM_CACHE_DIR}
+apt-get install -qq npm &>/dev/null && apt-get install -qq yarn &>/dev/null
+npm install --prefix /maps --cache ${NPM_CACHE_DIR} &>/dev/null
 
 export PATH=${HOME}/.local/bin:$PATH
 export PIP_CACHE_DIR=${VENDOR_BUNDLE}/pip
 
 # https://pypi.org/project/pipx/
-python -m pip install --upgrade pip setuptools six wheel
-python -m pip install pytest-cov -r /maps/requirements.txt
+python -m pip install --upgrade pip setuptools six wheel &>/dev/null
+python -m pip install pytest-cov -r /maps/requirements.txt &>/dev/null
 python -m pip install jax[cuda11_cudnn82] \
-  -f https://storage.googleapis.com/jax-releases/jax_releases.html
+  -f https://storage.googleapis.com/jax-releases/jax_releases.html &>/dev/null
 
 export GEM_PATH=${VENDOR_BUNDLE}/gem
 export GEM_HOME=${GEM_PATH}/ruby/${RUBY_VERSION}
 export PATH=$PATH:${GEM_HOME}/bin
 
 # https://stackoverflow.com/a/30369485/4058484
-apt-get install -qq ruby ruby-dev ruby-bundler build-essential
-gem install rails --version "$RAILS_VERSION" --quiet --silent
+apt-get install -qq ruby ruby-dev ruby-bundler build-essential &>/dev/null
+gem install rails --version "$RAILS_VERSION" --quiet --silent &>/dev/null
 
 # installed packages
 echo -e "\n$hr\nUPON INSTALLATION\n$hr"
@@ -129,7 +133,7 @@ bundle config cache_all true
 cleanup_bundler_cache() {
   /maps/Scripts/cleanup_bundler.sh
   rm -rf ${GEM_HOME} && mkdir -p ${GEM_HOME}
-  gem install bundler -v "${BUNDLER_VER}"
+  gem install bundler -v "${BUNDLER_VER}" &>/dev/null
   echo -e "\nCLEANUP BUNDLE\n$hr" && bundle install
   CLEANUP_BUNDLER_CACHE_DONE=true
 }
@@ -187,5 +191,5 @@ else
   exit 1
 fi
 
-apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* &>/dev/null
 exit $?

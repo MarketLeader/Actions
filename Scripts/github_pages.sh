@@ -7,7 +7,10 @@ echo -e "Deploying to https://github.com/${GITHUB_REPOSITORY}.git\n"
 
 deploy_remote() {
   REMOTE_REPO="https://${ACTOR}:${TOKEN}@github.com/${REPOSITORY}.git"
-  git remote add origin $REMOTE_REPO && git push origin --delete $BRANCH
+  git remote add origin $REMOTE_REPO
+  if git rev-parse --quiet --verify $BRANCH > /dev/null; then
+    git push origin --delete $BRANCH
+  fi
   git add . && git commit -m "jekyll build from Action ${GITHUB_SHA}"
   rm -rf .git
 }

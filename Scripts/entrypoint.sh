@@ -185,7 +185,7 @@ build_jekyll || {
 
 # Check if deploy on the same repository branch
 if [[ "${PROVIDER}" == "github" ]]; then
-  source "/maps/Scripts/github_pages.sh"
+  /maps/Scripts/github_pages.sh
 else
   echo -e "${PROVIDER} is an unsupported provider."
   exit 1

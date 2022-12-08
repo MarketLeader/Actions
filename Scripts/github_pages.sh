@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 set -e
 
 echo -e "$hr\nDEPLOYMENT\n$hr"
@@ -26,7 +26,7 @@ if [[ "${GITHUB_REPOSITORY_OWNER}" == "eq19" ]]; then
 fi
 
 cd ${WORKING_DIR}/build && touch .nojekyll
-REPOSITORY=$(git submodule foreach -q '[[ "$path" == */* ]] || git config remote.origin.url')
+REPOSITORY=$(git submodule foreach -q '[[ "$sm_path" == */* ]] || git config remote.origin.url')
 export REPOSITORY=${REPOSITORY/"https://github.com/"/""}
 git init && deploy_remote
 

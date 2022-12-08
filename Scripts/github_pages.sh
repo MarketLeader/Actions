@@ -26,7 +26,8 @@ if [[ "${GITHUB_REPOSITORY_OWNER}" == "eq19" ]]; then
 fi
 
 cd ${WORKING_DIR}/build && touch .nojekyll
-export REPOSITORY=${GITHUB_REPOSITORY}
+REPOSITORY=$(git submodule foreach -q '[[ "$sm_path" == */* ]] || git config remote.origin.url')
+export REPOSITORY=${REPOSITORY/"https://github.com/"/""}
 git init && deploy_remote
 
 exit $?
